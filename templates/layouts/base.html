@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+
+
+    <title>    
+        Cryptool - {% block title %}{% endblock %} 
+    </title>
+
+
+    <meta name="keywords" content="AES encryption, AES decryption, AES, online AES encryption and decryption tools" />
+    <meta name="description" content="Online AES encryption and decryption tool: AES encryption and decryption key can be customized to achieve AES online encryption, AES online decryption, AES reversible encryption and decryption online tool" />
+    <link href="/static/css/style.css" rel="stylesheet">
+    <link href="/static/css/new-examples.css" rel="stylesheet">
+    <link rel="alternate" hreflang="en" href="https://www.xhcode.com/aesencrypt/" />
+    <link rel="alternate" hreflang="de" href="https://www.xhcode.com/de/beautify/aesencrypt/" />
+    <link rel="alternate" hreflang="ja" href="https://www.xhcode.com/ja/beautify/aesencrypt/" />
+    <link rel="alternate" hreflang="ko" href="https://www.xhcode.com/ko/beautify/aesencrypt/" />
+    <script src="/static/js/share.js" type="text/javascript"></script>
+    <link href="/static/assets/vendors/@coreui/chartjs/css/coreui-chartjs.css" rel="stylesheet">
+    <link href="/static/css/skin.css" rel="stylesheet" type="text/css" />
+
+    <!-- Specific Page CSS goes HERE  -->
+    {% block stylesheets %}{% endblock stylesheets %}
+
+  </head>
+  <body class="dark-theme">
+
+
+   
+        {% include 'includes/sidebar.html' %}
+
+        <div class="wrapper d-flex flex-column min-vh-100 bg-light dark:bg-transparent">
+   
+
+          {% block content %}{% endblock %}
+
+          {% include 'includes/footer.html' %}
+        </div>
+   
+
+
+    <!-- CoreUI and necessary plugins-->
+    <script src="/style/js/jquery-1.11.3.min.js" type="text/javascript"></script>
+    <script src="/style/js/bootstrap3.5min.js" type="text/javascript"></script>
+    <script src="/style/js/mainjs.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/style/js/pjs/core-min.js"></script>
+
+    <script src="/static/js/handle_theme.js" type="text/javascript"></script>
+
+
+    <!-- Specific Page JS goes HERE  -->
+    {% block javascripts %}{% endblock javascripts %}
+    
+    <script src="/static/js/coreui.bundle.min.js" type="text/javascript"></script>
+    <script src="/static/js/simplebar.min.js" type="text/javascript"></script>
+    <script src="/static/js/rocket-loader.min.js" data-cf-settings="da760b776b1763a24648425f-|49" defer=""></script>
+  </body>
+</html>

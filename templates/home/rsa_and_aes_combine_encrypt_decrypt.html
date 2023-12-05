@@ -1,0 +1,502 @@
+<!-- File: aes_encrypt_decrypt.html -->
+{% extends 'layouts/base.html' %}
+
+{% block title %}AES Encryption/Decryption{% endblock %}
+
+{% block content %}
+<header class="header header-sticky mb-4">
+  <div class="container-fluid">
+    <button class="header-toggler px-md-0 me-md-3" type="button" onclick="if (!window.__cfRLUnblockHandlers) return false; coreui.Sidebar.getInstance(document.querySelector('#sidebar')).toggle()">
+      <svg class="icon icon-lg">
+        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-menu"></use>
+      </svg>
+    </button>
+    <a class="header-brand d-md-none" href="/">
+      <img class="sidebar-brand-full" src="/static/assets/img/logo.png" width="128" alt="XhCode Logo">
+    </a>
+    <ul class="header-nav d-none d-md-flex">
+      <li class="nav-item">Cryptool</li>
+    </ul>
+    <nav class="header-nav ms-auto me-4"></nav>
+    <ul class="header-nav me-3 d-md-flex">
+      <li class="nav-item dropdown d-md-down-none">
+        <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+          <input class="btn-check" id="btn-light-theme" type="radio" name="theme-switch" autocomplete="off" value="light" onchange="handleThemeChange(this)">
+          <label class="btn btn-primary" for="btn-light-theme">
+            <svg class="icon">
+              <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-sun"></use>
+            </svg>
+          </label>
+          <input class="btn-check" id="btn-dark-theme" type="radio" name="theme-switch" autocomplete="off" value="dark" onchange="handleThemeChange(this)">
+          <label class="btn btn-primary" for="btn-dark-theme">
+            <svg class="icon">
+              <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-moon"></use>
+            </svg>
+          </label>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="header-divider d-none d-md-flex"></div>
+  <div class="container-fluid d-none d-md-flex">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb my-0 ms-2">
+        <!-- Generate Key Button -->
+        <div class="ms-auto">
+          <a href="#" id="generate-aes-and-rsa-key-button-section" class="btn btn-ghost-primary">Generate RSA with AES Key</a>
+        </div>
+        <!-- AES Encrypt Button -->
+        <div class="ms-auto">
+          <a href="#" id="encrypt-aes--and-rsa-button-section" class="btn btn-ghost-primary">RSA with AES Encrypt</a>
+        </div>
+        <!-- AES Decrypt Button -->
+        <div class="ms-auto">
+          <a href="#" id="decrypt-aes-and-rsa-button-section" class="btn btn-ghost-primary">RSA with AESDecrypt</a>
+        </div>
+      </ol>
+    </nav>
+  </div>
+</header>
+<div class="body flex-grow-1 px-3">
+  <div class="container-lg">
+    <link href="/static/css/skin.css" rel="stylesheet" type="text/css" />
+    <div class="accordion" id="accordion2">
+      <div class="accordion-group">
+        <!-- ISI KONTEN SEMUA -->
+        <!-- Generate Key Section -->
+        <div id="generate-aes-and-rsa-key-section" class="toggle-section" style="display: none;">
+          <ul class="nav nav-tabs hbflag">
+            <li role="presentation" class="title">AES Generate Key</li>
+          </ul>
+          <div class="panel">
+            <form id="form-generate-aes-key" class="form-horizontal" method="post">
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <span class="label label-default">Select the AES key length :</span>
+                  <p></p>
+                  <select id="key-length-aes" class="form-select">
+                    <option value="128">128</option>
+                    <option value="192">192</option>
+                    <option value="256">256</option>
+                  </select>
+                  <div class="form-group">
+                    <div class="col-sm-12">
+                      <button id="generate-aes-key" class="btn btn-success" type="button">
+                        <svg class="icon me-2">
+                          <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-sync"></use>
+                        </svg> Generate AES Key </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <p>Result Generated AES Key :</p>
+                  <textarea onmouseover="this.focus();" id="result-generated-key-aes" name="result-generated-key-aes" class="form-control" rows="1" style="max-height: 2222px;" placeholder="Results from generating AES keys"></textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <button id="copy-key-aes-button" class="btn btn-success" type="button">
+                  <svg class="icon me-2">
+                    <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-copy"></use>
+                  </svg> Copy AES Key </button>
+                <button id="save-aes-key-button" class="btn btn-success" type="button">
+                  <svg class="icon me-2">
+                    <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-save"></use>
+                  </svg> Save AES Key </button>
+                <!-- Error Modal Dialog -->
+                <div id="error-message-download-generate-aes-key" style="display: none;"></div>
+              </div>
+            </form>
+          </div>
+
+
+          
+
+          <ul class="nav nav-tabs hbflag">
+            <li role="presentation" class="title">RSA encryption</li>
+          </ul>
+          <div class="panel">
+            <form id="form1" class="form-horizontal" action="index.htm" method="post">
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <span class="label label-default">Enter Public Key :</span>
+                  <p></p>
+                  <textarea onmouseover="this.focus();" id="encryption-key-public-key-rsa" name="encryption-key-public-key-rsa" class="form-control" rows="10" style="max-height: 2222px;" placeholder="Please enter the public key to encrypt RSA"></textarea>
+                  <div class="form-group">
+                    <button id="upload-public-key-from-file-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                      </svg>Upload Public Key (.pem file) <input id="upload-public-key-from-file-input" class="upload-public-key-from-file-input" type="file" style="display: none;" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <span class="label label-default">Enter text to be Encrypted :</span>
+                    <p></p>
+                    <div id="input-plaintext-rsa-text-encryption-status" class="text-end"> Size: 0 Bytes, 0 Characters </div>
+                  </div>
+                  <p></p>
+                  <textarea onmouseover="this.focus();" id="plaintext-rsa-text-encryption" name="plaintext-rsa-text-encryption" class="form-control" rows="10" style="max-height: 2222px;" placeholder="Please enter the text to be encrypted or decrypted"></textarea>
+                  <div class="form-group">
+                    <button id="encrypt-text-button-rsa" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-lock-locked"></use>
+                      </svg>RSA Encryption </button>
+                    <button id="upload-plaintext-rsa-from-file-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                      </svg>Upload Plaintext (.txt file) <input id="upload-plaintext-rsa-from-file-input" class="upload-plaintext-rsa-from-file-button" type="file" style="display: none;" />
+                    </button>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <span class="label label-default">RSA Encrypted Output: :</span>
+                  <p></p>
+                  <textarea onmouseover="this.focus();" id="result-encrypted-text-rsa" name="result-encrypted-text-rsa" class="form-control" rows="10" style="max-height: 2222px;" placeholder="The resulting encryption results"></textarea>
+                  <div class="form-group">
+                    <button id="copy-encrypted-text-rsa-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-copy"></use>
+                      </svg>Copy Result Encrypt </button>
+                    <button id="save-encrypted-text-rsa-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-save"></use>
+                      </svg>Save RSA Encrypted Results </button>
+                    <button id="clear-input-box-encrypt-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-clear-all"></use>
+                      </svg>Clear Input Box </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+
+
+          
+        </div>
+        <!-- TEMPAT SIMPLYFY BARU ENKRIPSI -->
+        <!-- AES Encrypt Section -->
+        <div id="encrypt-aes-and-rsa-section" class="toggle-section" style="display: none;">
+          <ul class="nav nav-tabs hbflag">
+            <li role="presentation" class="title">AES encryption</li>
+          </ul>
+          <div class="panel">
+            <form id="form1" class="form-horizontal" action="index.htm" method="post">
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <p>Enter AES Key :</p>
+                  <textarea onmouseover="this.focus();" id="aes-key-for-encryption-text" name="aes-key-for-encryption-text" class="form-control" rows="1" style="max-height: 2222px;" placeholder="Enter the AES key used for text encryption"></textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <button id="upload-aes-key-for-encrypt-from-file-button" class="btn btn-success" type="button">
+                    <svg class="icon me-2">
+                      <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                    </svg> Upload AES Key (.txt file) <input id="upload-aes-key-for-encrypt-from-file-input" class="upload-aes-key-for-encrypt-from-file-input" type="file" style="display: none;" />
+                  </button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <span class="label label-default">Enter text to be Encrypted :</span>
+                    <p></p>
+                    <div id="input-plaintext-aes-text-encryption-status" class="text-end"> Size: 0 Bytes, 0 Characters </div>
+                  </div>
+                  <p></p>
+                  <textarea onmouseover="this.focus();" id="plaintext-aes-text-encryption" name="plaintext-aes-text-encryption" class="form-control" rows="10" style="max-height: 2222px;" placeholder="Please enter the text to be encrypted"></textarea>
+                  <div class="form-group">
+                    <button id="encrypt-text-button-aes" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-lock-locked"></use>
+                      </svg> AES Encryption </button>
+                    <button id="upload-plaintext-aes-from-file-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                      </svg> Upload Plaintext (.txt file) <input id="upload-plaintext-aes-from-file-input" class="upload-plaintext-aes-from-file-input" type="file" style="display: none;" />
+                    </button>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <span class="label label-default">AES Encrypted Output: :</span>
+                  <p></p>
+                  <textarea onmouseover="this.focus();" id="result-encrypted-text-aes" name="result-encrypted-text-aes" class="form-control" rows="10" style="max-height: 2222px;" placeholder="Text encryption results"></textarea>
+                  <div class="form-group">
+                    <button id="copy-encrypted-text-aes-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-copy"></use>
+                      </svg> Copy Result Encrypt </button>
+                    <button id="save-encrypted-text-aes-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-save"></use>
+                      </svg> Save AES Encrypted Results </button>
+                    <button id="clear-input-box-encrypt-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-clear-all"></use>
+                      </svg> Clear Input Box </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+
+          <ul class="nav nav-tabs hbflag">
+            <li role="presentation" class="title">AES Encryption File</li>
+          </ul>
+          <div class="alert alert-info" role="alert">
+            Maksimal Ukuran File Enkrpisi 2 GB!
+          </div>
+          <div class="panel">
+            <form id="form1" class="form-horizontal" action="index.htm" method="post">
+
+              <div class="mb-3">
+                <input class="form-control" type="file" id="input-file-for-encryption-aes">
+              </div>
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <p>Enter AES Key :</p>
+                  <textarea onmouseover="this.focus();" id="aes-key-for-encryption-file" name="aes-key-for-encryption-file" class="form-control" rows="1" style="max-height: 2222px;" placeholder="Enter the AES key used for file encryption"></textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <button id="encrypt-file-button-aes" class="btn btn-success" type="button">
+                    <svg class="icon me-2">
+                      <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-lock-locked"></use>
+                    </svg> AES Encryption </button>
+                  <button id="clear-input-box-encrypt-file-button" class="btn btn-success" type="button">
+                    <svg class="icon me-2">
+                      <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-clear-all"></use>
+                    </svg> Clear Input Box </button>
+                  <button id="upload-aes-key-for-encrypt-file-from-file-button" class="btn btn-success" type="button">
+                    <svg class="icon me-2">
+                      <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                    </svg> Upload AES Key (.txt file) <input id="upload-aes-key-for-encrypt-file-from-file-input" class="upload-aes-key-for-encrypt-file-from-file-input" type="file" style="display: none;" />
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <!-- TEMPAT SIMPLYFY BARU ENKRIPSI -->
+        <!-- TEMPAT SIMPLYFY BARU DEKRIPSI-->
+        <!-- AES Decrypt Section -->
+        <div id="decrypt-aes-and-rsa-section" class="toggle-section" style="display: none;">
+          <ul class="nav nav-tabs hbflag">
+            <li role="presentation" class="title">RSA decryption</li>
+          </ul>
+          <div class="panel">
+            <form id="form1" class="form-horizontal" action="index.htm" method="post">
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <span class="label label-default">Private Key :</span>
+                  <p></p>
+                  <textarea onmouseover="this.focus();" id="decryption-key-private-key-rsa" name="decryption-key-private-key-rsa" class="form-control" rows="10" style="max-height: 2222px;" placeholder="Please enter the private key to decrypt RSA"></textarea>
+  
+                  <div class="form-group">
+                    <button id="upload-private-key-from-file-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                      </svg>Upload Private Key (.pem file) <input id="upload-private-key-from-file-input" class="upload-private-key-from-file-input" type="file" style="display: none;" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+  
+  
+  
+  
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <span class="label label-default">Enter text to be Decrypted :</span>
+                    <p></p>
+                    <div id="input-ciphertext-rsa-text-encryption-status" class="text-end"> Size: 0 Bytes, 0 Characters </div>
+                  </div>
+                  <p></p>
+                  <textarea onmouseover="this.focus();" id="ciphertext-rsa-text-encryption" name="ciphertext-rsa-text-encryption" class="form-control" rows="10" style="max-height: 2222px;" placeholder="Please enter the text to be encrypted or decrypted"></textarea>
+  
+                  <div class="form-group">
+                    <button id="decrypt-text-button-rsa" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-lock-unlocked"></use>
+                      </svg>RSA Decryption </button>
+  
+                      <button id="upload-ciphertext-rsa-from-file-button" class="btn btn-success" type="button">
+                        <svg class="icon me-2">
+                          <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                        </svg>Upload Ciphertext (.txt file) <input id="upload-ciphertext-rsa-from-file-input" class="upload-ciphertext-rsa-from-file-button" type="file" style="display: none;" />
+                      </button>
+                  </div>
+                </div>
+  
+  
+                <div class="col-sm-6">
+  
+                  <span class="label label-default">RSA Decrypted Output: :</span>
+                  <p></p>
+                  <textarea onmouseover="this.focus();" id="result-decrypted-text-rsa" name="result-decrypted-text-rsa" class="form-control" rows="10" style="max-height: 2222px;" placeholder="The resulting encryption / decryption results"></textarea>
+  
+                  <div class="form-group">
+                    <button id="copy-decrypted-text-rsa-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-copy"></use>
+                      </svg>Copy Result Decrypt </button>
+                    <button id="save-decrypted-text-rsa-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-save"></use>
+                      </svg>Save RSA Decrypted Results </button>
+  
+                      <button id="clear-input-box-decrypt-button" class="btn btn-success" type="button">
+                        <svg class="icon me-2">
+                          <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-clear-all"></use>
+                        </svg>Clear Input Box </button>
+  
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+
+
+
+          <ul class="nav nav-tabs hbflag">
+            <li role="presentation" class="title">AES decryption</li>
+          </ul>
+          <div class="panel">
+            <form id="form1" class="form-horizontal" action="index.htm" method="post">
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <p>Enter AES Key :</p>
+                  <textarea onmouseover="this.focus();" id="aes-key-for-decryption-text" name="aes-key-for-decryption-text" class="form-control" rows="1" style="max-height: 2222px;" placeholder="Enter the AES key used for text decryption"></textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <button id="upload-aes-key-for-decrypt-from-file-button" class="btn btn-success" type="button">
+                    <svg class="icon me-2">
+                      <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                    </svg> Upload AES Key (.txt file) <input id="upload-aes-key-for-decrypt-from-file-input" class="upload-aes-key-for-decrypt-from-file-input" type="file" style="display: none;" />
+                  </button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <span class="label label-default">Enter text to be Decrypted :</span>
+                    <p></p>
+                    <div id="input-ciphertext-aes-text-encryption-status" class="text-end"> Size: 0 Bytes, 0 Characters </div>
+                  </div>
+                  <p></p>
+                  <textarea onmouseover="this.focus();" id="ciphertext-aes-text-encryption" name="ciphertext-aes-text-encryption" class="form-control" rows="10" style="max-height: 2222px;" placeholder="Please enter the text to be decrypted"></textarea>
+                  <div class="form-group">
+                    <button id="decrypt-text-button-aes" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-lock-unlocked"></use>
+                      </svg> AES Decryption </button>
+                    <button id="upload-ciphertext-aes-from-file-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                      </svg> Upload Ciphertext (.txt file) <input id="upload-ciphertext-aes-from-file-input" class="upload-ciphertext-aes-from-file-input" type="file" style="display: none;" />
+                    </button>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <span class="label label-default">AES Decrypted Output: :</span>
+                  <p></p>
+                  <textarea onmouseover="this.focus();" id="result-decrypted-text-aes" name="result-decrypted-text-aes" class="form-control" rows="10" style="max-height: 2222px;" placeholder="Text decryption results"></textarea>
+                  <div class="form-group">
+                    <button id="copy-decrypted-text-aes-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-copy"></use>
+                      </svg> Copy Result Decrypt </button>
+                    <button id="save-decrypted-text-aes-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-save"></use>
+                      </svg> Save AES Decrypted Results </button>
+                    <button id="clear-input-box-decrypt-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-clear-all"></use>
+                      </svg> Clear Input Box </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <ul class="nav nav-tabs hbflag">
+            <li role="presentation" class="title">AES Decryption File</li>
+          </ul>
+          <div class="alert alert-info" role="alert">
+            Maksimal Ukuran File Dekrpisi 2 GB!
+          </div>
+          <div class="panel">
+            <form id="form1" class="form-horizontal" action="index.htm" method="post">
+              <div class="mb-3">
+                <input class="form-control" type="file" id="input-file-for-decryption-aes">
+              </div>
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <p>Enter AES Key :</p>
+                  <textarea onmouseover="this.focus();" id="aes-key-for-decryption-file" name="aes-key-for-decryption-file" class="form-control" rows="1" style="max-height: 2222px;" placeholder="Enter the AES key used for file decryption"></textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <button id="decrypt-file-button-aes" class="btn btn-success" type="button">
+                    <svg class="icon me-2">
+                      <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-lock-locked"></use>
+                    </svg> AES decryption </button>
+                  <button id="clear-input-box-decrypt-file-button" class="btn btn-success" type="button">
+                    <svg class="icon me-2">
+                      <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-clear-all"></use>
+                    </svg> Clear Input Box </button>
+                  <button id="upload-aes-key-for-decrypt-file-from-file-button" class="btn btn-success" type="button">
+                    <svg class="icon me-2">
+                      <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                    </svg> Upload AES Key (.txt file) <input id="upload-aes-key-for-decrypt-file-from-file-input" class="upload-aes-key-for-decrypt-file-from-file-input" type="file" style="display: none;" />
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <!-- TEMPAT SIMPLYFY BARU DEKRIPSI-->
+      </div>
+    </div>
+  </div>
+</div>
+
+     
+
+
+    
+
+
+{% endblock %}
+
+{% block javascripts %}
+
+<!-- Include your JavaScript at the end of the file -->
+<script src="/static/js/sweetalert2@11.js"></script>
+
+              
+<!-- Include your JavaScript at the end of the file -->
+<script src="/static/js/jquery-3.6.4.min.js"></script>
+
+
+
+
+<script src="/static/js/rsa_and_aes_combine_script.js"></script>
+
+
+
+{% endblock javascripts %}

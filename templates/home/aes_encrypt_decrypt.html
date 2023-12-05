@@ -1,0 +1,1872 @@
+<!-- File: aes_encrypt_decrypt.html -->
+{% extends 'layouts/base.html' %}
+
+{% block title %}AES Encryption/Decryption{% endblock %}
+
+{% block content %}
+<header class="header header-sticky mb-4">
+  <div class="container-fluid">
+    <button class="header-toggler px-md-0 me-md-3" type="button" onclick="if (!window.__cfRLUnblockHandlers) return false; coreui.Sidebar.getInstance(document.querySelector('#sidebar')).toggle()">
+      <svg class="icon icon-lg">
+        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-menu"></use>
+      </svg>
+    </button>
+    <a class="header-brand d-md-none" href="/">
+      <img class="sidebar-brand-full" src="/static/assets/img/logo.png" width="128" alt="XhCode Logo">
+    </a>
+    <ul class="header-nav d-none d-md-flex">
+      <li class="nav-item">Cryptool</li>
+    </ul>
+    <nav class="header-nav ms-auto me-4"></nav>
+    <ul class="header-nav me-3 d-md-flex">
+      <li class="nav-item dropdown d-md-down-none">
+        <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+          <input class="btn-check" id="btn-light-theme" type="radio" name="theme-switch" autocomplete="off" value="light" onchange="handleThemeChange(this)">
+          <label class="btn btn-primary" for="btn-light-theme">
+            <svg class="icon">
+              <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-sun"></use>
+            </svg>
+          </label>
+          <input class="btn-check" id="btn-dark-theme" type="radio" name="theme-switch" autocomplete="off" value="dark" onchange="handleThemeChange(this)">
+          <label class="btn btn-primary" for="btn-dark-theme">
+            <svg class="icon">
+              <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-moon"></use>
+            </svg>
+          </label>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="header-divider d-none d-md-flex"></div>
+  <div class="container-fluid d-none d-md-flex">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb my-0 ms-2">
+        <!-- Generate Key Button -->
+        <div class="ms-auto">
+          <a href="#" id="generate-aes-key-button-section" class="btn btn-ghost-primary">Generate AES Key</a>
+        </div>
+        <!-- AES Encrypt Button -->
+        <div class="ms-auto">
+          <a href="#" id="encrypt-aes-button-section" class="btn btn-ghost-primary">AES Encrypt</a>
+        </div>
+        <!-- AES Decrypt Button -->
+        <div class="ms-auto">
+          <a href="#" id="decrypt-aes-button-section" class="btn btn-ghost-primary">AES Decrypt</a>
+        </div>
+      </ol>
+    </nav>
+  </div>
+</header>
+<div class="body flex-grow-1 px-3">
+  <div class="container-lg">
+    <link href="/static/css/skin.css" rel="stylesheet" type="text/css" />
+    <div class="accordion" id="accordion2">
+      <div class="accordion-group">
+        <!-- ISI KONTEN SEMUA -->
+        <!-- Generate Key Section -->
+        <div id="generate-aes-key-section" class="toggle-section" style="display: none;">
+          <ul class="nav nav-tabs hbflag">
+            <li role="presentation" class="title">AES Generate Key</li>
+          </ul>
+          <div class="panel">
+            <form id="form-generate-aes-key" class="form-horizontal" method="post">
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <span class="label label-default">Select the AES key length :</span>
+                  <p></p>
+                  <select id="key-length-aes" class="form-select">
+                    <option value="128">128</option>
+                    <option value="192">192</option>
+                    <option value="256">256</option>
+                  </select>
+                  <div class="form-group">
+                    <div class="col-sm-12">
+                      <button id="generate-aes-key" class="btn btn-success" type="button">
+                        <svg class="icon me-2">
+                          <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-sync"></use>
+                        </svg> Generate AES Key </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <p>Result Generated AES Key :</p>
+                  <textarea onmouseover="this.focus();" id="result-generated-key-aes" name="result-generated-key-aes" class="form-control" rows="1" style="max-height: 2222px;" placeholder="Results from generating AES keys"></textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <button id="copy-key-aes-button" class="btn btn-success" type="button">
+                  <svg class="icon me-2">
+                    <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-copy"></use>
+                  </svg> Copy AES Key </button>
+                <button id="save-aes-key-button" class="btn btn-success" type="button">
+                  <svg class="icon me-2">
+                    <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-save"></use>
+                  </svg> Save AES Key </button>
+                <!-- Error Modal Dialog -->
+                <div id="error-message-download-generate-aes-key" style="display: none;"></div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <!-- TEMPAT SIMPLYFY BARU ENKRIPSI -->
+        <!-- AES Encrypt Section -->
+        <div id="encrypt-aes-section" class="toggle-section" style="display: none;">
+          <ul class="nav nav-tabs hbflag">
+            <li role="presentation" class="title">AES encryption</li>
+          </ul>
+          <div class="panel">
+            <form id="form1" class="form-horizontal" action="index.htm" method="post">
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <p>Enter AES Key :</p>
+                  <textarea onmouseover="this.focus();" id="aes-key-for-encryption-text" name="aes-key-for-encryption-text" class="form-control" rows="1" style="max-height: 2222px;" placeholder="Enter the AES key used for text encryption"></textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <button id="upload-aes-key-for-encrypt-from-file-button" class="btn btn-success" type="button">
+                    <svg class="icon me-2">
+                      <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                    </svg> Upload AES Key (.txt file) <input id="upload-aes-key-for-encrypt-from-file-input" class="upload-aes-key-for-encrypt-from-file-input" type="file" style="display: none;" />
+                  </button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <span class="label label-default">Enter text to be Encrypted :</span>
+                    <p></p>
+                    <div id="input-plaintext-aes-text-encryption-status" class="text-end"> Size: 0 Bytes, 0 Characters </div>
+                  </div>
+                  <p></p>
+                  <textarea onmouseover="this.focus();" id="plaintext-aes-text-encryption" name="plaintext-aes-text-encryption" class="form-control" rows="10" style="max-height: 2222px;" placeholder="Please enter the text to be encrypted"></textarea>
+                  <div class="form-group">
+                    <button id="encrypt-text-button-aes" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-lock-locked"></use>
+                      </svg> AES Encryption </button>
+                    <button id="upload-plaintext-aes-from-file-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                      </svg> Upload Plaintext (.txt file) <input id="upload-plaintext-aes-from-file-input" class="upload-plaintext-aes-from-file-input" type="file" style="display: none;" />
+                    </button>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <span class="label label-default">AES Encrypted Output: :</span>
+                  <p></p>
+                  <textarea onmouseover="this.focus();" id="result-encrypted-text-aes" name="result-encrypted-text-aes" class="form-control" rows="10" style="max-height: 2222px;" placeholder="Text encryption results"></textarea>
+                  <div class="form-group">
+                    <button id="copy-encrypted-text-aes-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-copy"></use>
+                      </svg> Copy Result Encrypt </button>
+                    <button id="save-encrypted-text-aes-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-save"></use>
+                      </svg> Save AES Encrypted Results </button>
+                    <button id="clear-input-box-encrypt-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-clear-all"></use>
+                      </svg> Clear Input Box </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+
+          <ul class="nav nav-tabs hbflag">
+            <li role="presentation" class="title">AES Encryption File</li>
+          </ul>
+          <div class="alert alert-info" role="alert">
+            Maksimal Ukuran File Enkrpisi 2 GB!
+          </div>
+          <div class="panel">
+            <form id="form1" class="form-horizontal" action="index.htm" method="post">
+
+              <div class="mb-3">
+                <input class="form-control" type="file" id="input-file-for-encryption-aes">
+              </div>
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <p>Enter AES Key :</p>
+                  <textarea onmouseover="this.focus();" id="aes-key-for-encryption-file" name="aes-key-for-encryption-file" class="form-control" rows="1" style="max-height: 2222px;" placeholder="Enter the AES key used for file encryption"></textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <button id="encrypt-file-button-aes" class="btn btn-success" type="button">
+                    <svg class="icon me-2">
+                      <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-lock-locked"></use>
+                    </svg> AES Encryption </button>
+                  <button id="clear-input-box-encrypt-file-button" class="btn btn-success" type="button">
+                    <svg class="icon me-2">
+                      <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-clear-all"></use>
+                    </svg> Clear Input Box </button>
+                  <button id="upload-aes-key-for-encrypt-file-from-file-button" class="btn btn-success" type="button">
+                    <svg class="icon me-2">
+                      <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                    </svg> Upload AES Key (.txt file) <input id="upload-aes-key-for-encrypt-file-from-file-input" class="upload-aes-key-for-encrypt-file-from-file-input" type="file" style="display: none;" />
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <!-- TEMPAT SIMPLYFY BARU ENKRIPSI -->
+        <!-- TEMPAT SIMPLYFY BARU DEKRIPSI-->
+        <!-- AES Decrypt Section -->
+        <div id="decrypt-aes-section" class="toggle-section" style="display: none;">
+          <ul class="nav nav-tabs hbflag">
+            <li role="presentation" class="title">AES decryption</li>
+          </ul>
+          <div class="panel">
+            <form id="form1" class="form-horizontal" action="index.htm" method="post">
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <p>Enter AES Key :</p>
+                  <textarea onmouseover="this.focus();" id="aes-key-for-decryption-text" name="aes-key-for-decryption-text" class="form-control" rows="1" style="max-height: 2222px;" placeholder="Enter the AES key used for text decryption"></textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <button id="upload-aes-key-for-decrypt-from-file-button" class="btn btn-success" type="button">
+                    <svg class="icon me-2">
+                      <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                    </svg> Upload AES Key (.txt file) <input id="upload-aes-key-for-decrypt-from-file-input" class="upload-aes-key-for-decrypt-from-file-input" type="file" style="display: none;" />
+                  </button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <span class="label label-default">Enter text to be Decrypted :</span>
+                    <p></p>
+                    <div id="input-ciphertext-aes-text-encryption-status" class="text-end"> Size: 0 Bytes, 0 Characters </div>
+                  </div>
+                  <p></p>
+                  <textarea onmouseover="this.focus();" id="ciphertext-aes-text-encryption" name="ciphertext-aes-text-encryption" class="form-control" rows="10" style="max-height: 2222px;" placeholder="Please enter the text to be decrypted"></textarea>
+                  <div class="form-group">
+                    <button id="decrypt-text-button-aes" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-lock-unlocked"></use>
+                      </svg> AES Decryption </button>
+                    <button id="upload-ciphertext-aes-from-file-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                      </svg> Upload Ciphertext (.txt file) <input id="upload-ciphertext-aes-from-file-input" class="upload-ciphertext-aes-from-file-input" type="file" style="display: none;" />
+                    </button>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <span class="label label-default">AES Decrypted Output: :</span>
+                  <p></p>
+                  <textarea onmouseover="this.focus();" id="result-decrypted-text-aes" name="result-decrypted-text-aes" class="form-control" rows="10" style="max-height: 2222px;" placeholder="Text decryption results"></textarea>
+                  <div class="form-group">
+                    <button id="copy-decrypted-text-aes-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-copy"></use>
+                      </svg> Copy Result Decrypt </button>
+                    <button id="save-decrypted-text-aes-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-save"></use>
+                      </svg> Save AES Decrypted Results </button>
+                    <button id="clear-input-box-decrypt-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-clear-all"></use>
+                      </svg> Clear Input Box </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <ul class="nav nav-tabs hbflag">
+            <li role="presentation" class="title">AES Decryption File</li>
+          </ul>
+          <div class="alert alert-info" role="alert">
+            Maksimal Ukuran File Dekrpisi 2 GB!
+          </div>
+          <div class="panel">
+            <form id="form1" class="form-horizontal" action="index.htm" method="post">
+              <div class="mb-3">
+                <input class="form-control" type="file" id="input-file-for-decryption-aes">
+              </div>
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <p>Enter AES Key :</p>
+                  <textarea onmouseover="this.focus();" id="aes-key-for-decryption-file" name="aes-key-for-decryption-file" class="form-control" rows="1" style="max-height: 2222px;" placeholder="Enter the AES key used for file decryption"></textarea>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <button id="decrypt-file-button-aes" class="btn btn-success" type="button">
+                    <svg class="icon me-2">
+                      <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-lock-locked"></use>
+                    </svg> AES decryption </button>
+                  <button id="clear-input-box-decrypt-file-button" class="btn btn-success" type="button">
+                    <svg class="icon me-2">
+                      <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-clear-all"></use>
+                    </svg> Clear Input Box </button>
+                  <button id="upload-aes-key-for-decrypt-file-from-file-button" class="btn btn-success" type="button">
+                    <svg class="icon me-2">
+                      <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                    </svg> Upload AES Key (.txt file) <input id="upload-aes-key-for-decrypt-file-from-file-input" class="upload-aes-key-for-decrypt-file-from-file-input" type="file" style="display: none;" />
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <!-- TEMPAT SIMPLYFY BARU DEKRIPSI-->
+      </div>
+    </div>
+  </div>
+</div>
+
+     
+
+
+    
+
+
+{% endblock %}
+
+{% block javascripts %}
+
+<!-- Include your JavaScript at the end of the file -->
+<script src="/static/js/sweetalert2@11.js"></script>
+
+              
+<!-- Include your JavaScript at the end of the file -->
+<script src="/static/js/jquery-3.6.4.min.js"></script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Function to show/hide sections based on button click
+    function toggleSection(sectionId) {
+    // Hide all sections
+    document.querySelectorAll('.toggle-section').forEach(section => {
+      section.style.display = 'none';
+    });
+
+    // Show the selected section
+    document.getElementById(sectionId).style.display = 'block';
+
+    // Update button classes based on active state
+    updateButtonClasses(sectionId);
+  }
+
+  // Function to update button classes based on active state
+  function updateButtonClasses(activeSectionId) {
+    // Reset classes for all buttons
+    document.getElementById('generate-aes-key-button-section').classList.remove('active');
+    document.getElementById('encrypt-aes-button-section').classList.remove('active');
+    document.getElementById('decrypt-aes-button-section').classList.remove('active');
+
+    // Set active class for the button corresponding to the active section
+    if (activeSectionId === 'generate-aes-key-section') {
+      document.getElementById('generate-aes-key-button-section').classList.add('active');
+    } else if (activeSectionId === 'encrypt-aes-section') {
+      document.getElementById('encrypt-aes-button-section').classList.add('active');
+    } else if (activeSectionId === 'decrypt-aes-section') {
+      document.getElementById('decrypt-aes-button-section').classList.add('active');
+    }
+  }
+
+  // Event listener for "Generate Key" button
+  document.getElementById('generate-aes-key-button-section').addEventListener('click', function (e) {
+    e.preventDefault(); // Prevent the default behavior of the link
+    toggleSection('generate-aes-key-section');
+  });
+
+  // Event listener for "AES Encrypt" button
+  document.getElementById('encrypt-aes-button-section').addEventListener('click', function (e) {
+    e.preventDefault(); // Prevent the default behavior of the link
+    toggleSection('encrypt-aes-section');
+  });
+
+  // Event listener for "AES Decrypt" button
+  document.getElementById('decrypt-aes-button-section').addEventListener('click', function (e) {
+    e.preventDefault(); // Prevent the default behavior of the link
+    toggleSection('decrypt-aes-section');
+  });
+
+  // Show "Generate Key" section by default when the page loads
+  toggleSection('generate-aes-key-section');
+
+
+// =======================GENERATE AES KEY=======================
+    document.getElementById('generate-aes-key').addEventListener('click', function() {
+    // Ambil panjang kunci dari dropdown
+    var keyLength = document.getElementById('key-length-aes').value;
+
+    // Kirim permintaan POST ke server Flask
+    fetch('/generate-key-aes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'key_length=' + keyLength,
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Periksa apakah ada kunci yang dihasilkan
+        if (data.key) {
+          // Tampilkan hasil di textarea
+          document.getElementById('result-generated-key-aes').value = data.key;
+        } else {
+          // Tampilkan pesan kesalahan menggunakan modal
+          document.getElementById('error-message-generate-aes-key-dialog').textContent = 'Error generating AES key.';
+          $('#dialog-error-generate-aes-key').modal('show');
+        }
+      })
+      .catch(error => {
+        // Tampilkan pesan kesalahan menggunakan modal
+        document.getElementById('error-message-generate-aes-key-dialog').textContent = 'Error: ' + error.message;
+        $('#dialog-error-generate-aes-key').modal('show');
+      });
+  });
+
+
+
+
+
+
+
+
+
+
+
+
+
+// =======================ENCRYPTION TEXT BUTTON AES=======================
+document.getElementById('encrypt-text-button-aes').addEventListener('click', function () {
+    var plaintext = document.getElementById('plaintext-aes-text-encryption').value;
+    var key = document.getElementById('aes-key-for-encryption-text').value;
+
+    // Check if plaintext and key are provided
+    if (!plaintext || !key) {
+        // Show Error Modal
+        Swal.fire({
+            icon: 'warning',
+            title: 'Enkripsi Teks AES Gagal',
+            text: 'Pastikan sudah menginputkan plaintext dan kunci AES!',
+            showConfirmButton: true
+        });
+        return; // Exit the function if plaintext or key is missing
+    }
+
+    // Show loading modal
+    var loadingModal = Swal.fire({
+        title: 'Sedang memproses',
+        text: 'Harap tunggu...',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        onBeforeOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch('/encrypt-text-aes', {
+        method: 'POST',
+        body: new URLSearchParams({ plaintext, key }),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Encryption failed');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.hasOwnProperty('error')) {
+                // Show Error Modal
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Enkripsi Teks AES Gagal',
+                    text: 'Pastikan plaintext dan kunci AES yang digunakan valid!',
+                    showConfirmButton: true
+                });
+            } else {
+                // Show Success Modal
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Proses enkripsi file AES berhasil',
+                    text: 'Enkripsi AES berhasil!',
+                    showConfirmButton: true
+                });
+
+                document.getElementById('result-encrypted-text-aes').value = data.ciphertext;
+            }
+        })
+        .catch(error => {
+            // Show Error Modal
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message,
+                showConfirmButton: true
+            });
+        })
+        .finally(() => {
+            // Close SweetAlert2 modal
+            loadingModal.close();
+        });
+});
+
+
+
+// =======================DECRYPTION TEXT BUTTON AES=======================
+document.getElementById('decrypt-text-button-aes').addEventListener('click', function () {
+    var ciphertext = document.getElementById('ciphertext-aes-text-encryption').value;
+    var key = document.getElementById('aes-key-for-decryption-text').value;
+
+    // Check if ciphertext and key are provided
+    if (!ciphertext || !key) {
+        // Show Error Modal
+        Swal.fire({
+            icon: 'warning',
+            title: 'Dekripsi Teks AES Gagal',
+            text: 'Pastikan sudah menginputkan ciphertext dan kunci AES!',
+            showConfirmButton: true
+        });
+        return; // Exit the function if ciphertext or key is missing
+    }
+
+    // Show loading modal
+    var loadingModal = Swal.fire({
+        title: 'Sedang memproses',
+        text: 'Harap tunggu...',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        onBeforeOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch('/decrypt-text-aes', {
+        method: 'POST',
+        body: new URLSearchParams({ ciphertext, key }),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Decryption failed');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.hasOwnProperty('error')) {
+                // Show Error Modal
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Dekripsi Teks AES Gagal',
+                    text: 'Pastikan ciphertext dan kunci AES yang digunakan valid!',
+                    showConfirmButton: true
+                });
+            } else {
+                // Show Success Modal
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Proses dekripsi file AES berhasil',
+                    text: 'Dekripsi AES berhasil!',
+                    showConfirmButton: true
+                });
+
+                document.getElementById('result-decrypted-text-aes').value = data.decrypted_text;
+            }
+        })
+        .catch(error => {
+            // Show Error Modal
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Proses dekripsi teks gagal. ' + error.message,
+                showConfirmButton: true
+            });
+        })
+        .finally(() => {
+            // Close SweetAlert2 modal
+            loadingModal.close();
+        });
+});
+
+
+
+
+
+
+
+  // ==================COPY AES KEY==================           
+  document.getElementById('copy-key-aes-button').addEventListener('click', function() {
+      var aesKeyTextArea = document.getElementById('result-generated-key-aes');
+      aesKeyTextArea.select();
+      document.execCommand('copy');
+  });
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  // ==================COPY ENCRYPTED TEXT aes==================      
+  document.getElementById('copy-encrypted-text-aes-button').addEventListener('click', function() {
+      var EncryptedTextAesTextArea = document.getElementById('result-encrypted-text-aes');
+      EncryptedTextAesTextArea.select();
+      document.execCommand('copy');
+  });
+
+  // ==================COPY DECRYPTED TEXT aes==================      
+  document.getElementById('copy-decrypted-text-aes-button').addEventListener('click', function() {
+      var DecryptedTextAesTextArea = document.getElementById('result-decrypted-text-aes');
+      DecryptedTextAesTextArea.select();
+      document.execCommand('copy');
+  });
+
+
+
+  // ==================SAVE AES KEY==================
+ 
+
+
+
+
+
+// ==================SAVE AES ENCRYPTED RESULTS==================
+document.getElementById('save-encrypted-text-aes-button').addEventListener('click', function() {
+    var encryptedResultsTextArea = document.getElementById('result-encrypted-text-aes');
+    var encryptedResultsText = encryptedResultsTextArea.value;
+
+    // Check if the encrypted text is empty
+    if (!encryptedResultsText.trim()) {
+        // Show Error Modal
+        Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            text: 'Tidak ada teks terenkripsi AES dalam textarea!',
+            showConfirmButton: true
+        });
+        return; // Exit the function if there is no value
+    }
+
+    // Show loading modal
+    var loadingModal = Swal.fire({
+        title: 'Sedang memproses',
+        text: 'Harap tunggu...',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        onBeforeOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    try {
+        // Create a Blob object from the text
+        var blob = new Blob([encryptedResultsText], {
+            type: 'text/plain'
+        });
+
+        // Create a link element for downloading
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = 'Encrypted_Aes_text_result.txt';
+
+        // Add the link element to the document
+        document.body.appendChild(link);
+
+        // Click on the link automatically
+        link.click();
+
+        // Remove the link element from the document
+        document.body.removeChild(link);
+
+        // Show Success Modal
+        Swal.fire({
+            icon: 'success',
+            title: 'Proses penyimpanan berhasil',
+            text: 'Encrypted AES text saved successfully',
+            showConfirmButton: true
+        });
+    } catch (error) {
+        // Show Error Modal
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error during download: ' + error.message,
+            showConfirmButton: true
+        });
+    } finally {
+        // Close SweetAlert2 modal
+        loadingModal.close();
+    }
+});
+
+
+
+// ==================SAVE DECRYPTED AES==================
+document.getElementById('save-decrypted-text-aes-button').addEventListener('click', function() {
+    var decryptedResultsTextArea = document.getElementById('result-decrypted-text-aes');
+    var decryptedResultsText = decryptedResultsTextArea.value;
+
+    // Check if the decrypted text is empty
+    if (!decryptedResultsText.trim()) {
+        // Show Error Modal
+        Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            text: 'Tidak ada teks terdekripsi AES dalam textarea!',
+            showConfirmButton: true
+        });
+        return; // Exit the function if there is no value
+    }
+
+    // Show loading modal
+    var loadingModal = Swal.fire({
+        title: 'Sedang memproses',
+        text: 'Harap tunggu...',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        onBeforeOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    try {
+        // Create a Blob object from the text
+        var blob = new Blob([decryptedResultsText], {
+            type: 'text/plain'
+        });
+
+        // Create a link element for downloading
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = 'decrypted_Aes_text_result.txt';
+
+        // Add the link element to the document
+        document.body.appendChild(link);
+
+        // Click on the link automatically
+        link.click();
+
+        // Remove the link element from the document
+        document.body.removeChild(link);
+
+        // Show Success Modal
+        Swal.fire({
+            icon: 'success',
+            title: 'Proses penyimpanan berhasil',
+            text: 'Decrypted AES text saved successfully',
+            showConfirmButton: true
+        });
+    } catch (error) {
+        // Show Error Modal
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error during download: ' + error.message,
+            showConfirmButton: true
+        });
+    } finally {
+        // Close SweetAlert2 modal
+        loadingModal.close();
+    }
+});
+
+
+
+// ==================SAVE RESULT GENERATED AES KEY==================
+document.getElementById('save-aes-key-button').addEventListener('click', function() {
+    var generatedAesKeyResultsTextArea = document.getElementById('result-generated-key-aes');
+    var generatedAesKeyResultsText = generatedAesKeyResultsTextArea.value;
+
+    // Check if the generated AES key text is empty
+    if (!generatedAesKeyResultsText.trim()) {
+        // Show Error Modal
+        Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            text: 'Tidak ada kunci AES yang dihasilkan dalam textarea!',
+            showConfirmButton: true
+        });
+        return; // Exit the function if there is no value
+    }
+
+    // Show loading modal
+    var loadingModal = Swal.fire({
+        title: 'Sedang memproses',
+        text: 'Harap tunggu...',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        onBeforeOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    try {
+        // Create a Blob object from the text
+        var blob = new Blob([generatedAesKeyResultsText], {
+            type: 'text/plain'
+        });
+
+        // Create a link element for downloading
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = 'Aes_key_generated_result.txt';
+
+        // Add the link element to the document
+        document.body.appendChild(link);
+
+        // Click on the link automatically
+        link.click();
+
+        // Remove the link element from the document
+        document.body.removeChild(link);
+
+        // Show Success Modal
+        Swal.fire({
+            icon: 'success',
+            title: 'Proses penyimpanan berhasil',
+            text: 'Generate AES key saved successfully',
+            showConfirmButton: true
+        });
+    } catch (error) {
+        // Show Error Modal
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error during download: ' + error.message,
+            showConfirmButton: true
+        });
+    } finally {
+        // Close SweetAlert2 modal
+        loadingModal.close();
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ==================UPLOAD PLAINTEXT AES==================
+// Mendengarkan klik pada tombol file
+document.getElementById('upload-plaintext-aes-from-file-button').addEventListener('click', function() {
+    // Memicu klik pada input file yang tersembunyi
+    document.getElementById('upload-plaintext-aes-from-file-input').click();
+});
+
+// Mendengarkan perubahan pada input file Plaintext
+document.getElementById('upload-plaintext-aes-from-file-input').addEventListener('change', function(event) {
+    var fileInput = event.target;
+    var textarea = document.getElementById('plaintext-aes-text-encryption');
+    var statusElement = document.getElementById('input-plaintext-aes-text-encryption-status');
+
+    // Memastikan bahwa file dipilih
+    if (fileInput.files.length > 0) {
+        var file = fileInput.files[0];
+
+        // Memeriksa ekstensi file
+        var fileName = file.name;
+        var fileExtension = fileName.split('.').pop().toLowerCase();
+
+        if (fileExtension === 'txt') {
+            var reader = new FileReader();
+
+            // Menampilkan loading modal
+            var loadingModal = Swal.fire({
+                title: 'Sedang memproses',
+                text: 'Harap tunggu...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                onBeforeOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Mengatur fungsi callback ketika file selesai dibaca
+            reader.onload = function(e) {
+                // Menutup loading modal
+                loadingModal.close();
+
+                // Mengambil isi file dan mengisinya ke dalam textarea
+                var fileContent = e.target.result;
+
+                // Memeriksa jumlah karakter
+                var maxCharacterLimit = 1000000; // Ganti dengan batas karakter yang diinginkan
+                var actualCharacterCount = countCharacters(fileContent);
+
+                if (actualCharacterCount > maxCharacterLimit) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Karakter terlalu banyak. Pilih file dengan karakter yang lebih sedikit. Maksimal 1juta karakter!',
+                        showConfirmButton: true
+                    });
+
+                    textarea.value = ''; // Mengosongkan textarea
+                    updateStatus('', statusElement); // Reset status to 0 Bytes, 0 Characters
+                } else {
+                    // Mengambil isi file dan mengisinya ke dalam textarea
+                    textarea.value = fileContent;
+
+                    // Menampilkan status ukuran dan karakter
+                    updateStatus(textarea.value, statusElement);
+
+                    // Menampilkan modal sukses
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'File berhasil diunggah',
+                        text: 'Plaintext berhasil diunggah dari file.',
+                        showConfirmButton: true
+                    });
+                }
+            };
+
+            // Membaca isi file sebagai teks
+            reader.readAsText(file);
+        } else {
+            // Menampilkan pesan kesalahan menggunakan SweetAlert
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'File yang diunggah bukan file txt.',
+                showConfirmButton: true
+            });
+
+            textarea.value = ''; // Mengosongkan textarea
+            updateStatus('', statusElement); // Reset status to 0 Bytes, 0 Characters
+        }
+    }
+});
+
+
+// Membersihkan nilai input file setelah digunakan
+document.getElementById('upload-plaintext-aes-from-file-button').addEventListener('click', function() {
+    var fileInput = document.getElementById('upload-plaintext-aes-from-file-input');
+    fileInput.value = null;
+});
+
+// Mendengarkan perubahan pada textarea
+document.getElementById('plaintext-aes-text-encryption').addEventListener('input', function() {
+    updateStatus(this.value, document.getElementById('input-plaintext-aes-text-encryption-status'));
+});
+
+// Fungsi untuk mengupdate status ukuran dan karakter
+function updateStatus(text, statusElement) {
+    var size = new Blob([text]).size; // Menghitung ukuran dalam byte
+    var charCount = text.length;
+    statusElement.textContent = 'Size: ' + size + ' Bytes, ' + charCount + ' Characters';
+}
+
+
+
+
+
+
+// ==================UPLOAD CIPHERTEXT AES==================
+// Mendengarkan klik pada tombol file
+document.getElementById('upload-ciphertext-aes-from-file-button').addEventListener('click', function () {
+    // Memicu klik pada input file yang tersembunyi
+    document.getElementById('upload-ciphertext-aes-from-file-input').click();
+});
+
+// Mendengarkan perubahan pada input file Ciphertext
+document.getElementById('upload-ciphertext-aes-from-file-input').addEventListener('change', function (event) {
+    var fileInput = event.target;
+    var textarea = document.getElementById('ciphertext-aes-text-encryption');
+    var statusElement = document.getElementById('input-ciphertext-aes-text-encryption-status');
+
+    // Memastikan bahwa file dipilih
+    if (fileInput.files.length > 0) {
+        var file = fileInput.files[0];
+
+        // Memeriksa ekstensi file
+        var fileName = file.name;
+        var fileExtension = fileName.split('.').pop().toLowerCase();
+
+        if (fileExtension === 'txt') {
+            var reader = new FileReader();
+
+            // Menampilkan loading modal
+            var loadingModal = Swal.fire({
+                title: 'Sedang memproses',
+                text: 'Harap tunggu...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                onBeforeOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Mengatur fungsi callback ketika file selesai dibaca
+            reader.onload = function (e) {
+                // Menutup loading modal
+                loadingModal.close();
+
+                // Mengambil isi file dan mengisinya ke dalam textarea
+                var fileContent = e.target.result;
+
+                // Memeriksa jumlah karakter
+                var maxCharacterLimit = 1000000; // Ganti dengan batas karakter yang diinginkan
+                var actualCharacterCount = countCharacters(fileContent);
+
+                if (actualCharacterCount > maxCharacterLimit) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Karakter terlalu banyak. Pilih file dengan karakter yang lebih sedikit. Maksimal 1juta karakter!',
+                        showConfirmButton: true
+                    });
+
+                    textarea.value = ''; // Mengosongkan textarea
+                    updateStatus('', statusElement); // Reset status to 0 Bytes, 0 Characters
+                } else {
+                    // Mengambil isi file dan mengisinya ke dalam textarea
+                    textarea.value = fileContent;
+
+                    // Menampilkan status ukuran dan karakter
+                    updateStatus(textarea.value, statusElement);
+
+                    // Menampilkan modal sukses
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'File berhasil diunggah',
+                        text: 'Ciphertext berhasil diunggah dari file.',
+                        showConfirmButton: true
+                    });
+                }
+            };
+
+            // Membaca isi file sebagai teks
+            reader.readAsText(file);
+        } else {
+            // Menampilkan pesan kesalahan menggunakan SweetAlert
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'File yang diunggah bukan file txt.',
+                showConfirmButton: true
+            });
+
+            textarea.value = ''; // Mengosongkan textarea
+            updateStatus('', statusElement); // Reset status to 0 Bytes, 0 Characters
+        }
+    }
+});
+
+
+// Membersihkan nilai input file setelah digunakan
+document.getElementById('upload-ciphertext-aes-from-file-button').addEventListener('click', function () {
+    var fileInput = document.getElementById('upload-ciphertext-aes-from-file-input');
+    fileInput.value = null;
+});
+
+// Mendengarkan perubahan pada textarea Ciphertext
+document.getElementById('ciphertext-aes-text-encryption').addEventListener('input', function () {
+    updateStatus(this.value, document.getElementById('input-ciphertext-aes-text-encryption-status'));
+});
+
+// Fungsi untuk mengupdate status ukuran dan karakter
+function updateStatus(text, statusElement) {
+    var size = new Blob([text]).size; // Menghitung ukuran dalam byte
+    var charCount = text.length;
+    statusElement.textContent = 'Size: ' + size + ' Bytes, ' + charCount + ' Characters';
+}
+
+
+
+
+// ==================UPLOAD AES KEY FOR ENCRYPTION==================
+// Mendengarkan klik pada tombol file untuk AES Key
+document.getElementById('upload-aes-key-for-encrypt-from-file-button').addEventListener('click', function () {
+    // Memicu klik pada input file yang tersembunyi
+    document.getElementById('upload-aes-key-for-encrypt-from-file-input').click();
+});
+
+// Mendengarkan perubahan pada input file untuk AES Key
+document.getElementById('upload-aes-key-for-encrypt-from-file-input').addEventListener('change', function (event) {
+    var fileInput = event.target;
+    var textarea = document.getElementById('aes-key-for-encryption-text');
+    var errorMessageDialog = document.getElementById('dialog-error-upload-aes-key-for-encrypt-from-file');
+
+    // Memastikan bahwa file dipilih
+    if (fileInput.files.length > 0) {
+        var file = fileInput.files[0];
+
+        // Memeriksa ekstensi file
+        var fileName = file.name;
+        var fileExtension = fileName.split('.').pop().toLowerCase();
+
+        if (fileExtension === 'txt') {
+            var reader = new FileReader();
+
+            // Menampilkan loading modal
+            var loadingModal = Swal.fire({
+                title: 'Sedang memproses',
+                text: 'Harap tunggu...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                onBeforeOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Mengatur fungsi callback ketika file selesai dibaca
+            reader.onload = function (e) {
+                // Menutup loading modal
+                loadingModal.close();
+
+                // Mengambil isi file dan mengisinya ke dalam textarea AES Key
+                var fileContent = e.target.result;
+
+                // Memeriksa jumlah karakter dengan benar, termasuk karakter khusus
+                var maxCharacterLimit = 100; // Ganti dengan batas karakter yang diinginkan
+                var actualCharacterCount = countCharacters(fileContent);
+
+                if (actualCharacterCount > maxCharacterLimit) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Karakter terlalu banyak. Pilih file dengan karakter yang lebih sedikit. Maksimal 100 karakter!',
+                        showConfirmButton: true
+                    });
+
+                    textarea.value = ''; // Mengosongkan textarea
+                } else {
+                    // Mengambil isi file dan mengisinya ke dalam textarea AES Key
+                    textarea.value = fileContent;
+
+                    // Menampilkan modal sukses
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'File berhasil diunggah',
+                        text: 'AES Key berhasil diunggah dari file.',
+                        showConfirmButton: true
+                    });
+
+                    // Menyembunyikan pesan kesalahan
+                    console.log('File berhasil diunggah.');
+                }
+            };
+
+            // Membaca isi file sebagai teks
+            reader.readAsText(file);
+        } else {
+            // Menampilkan pesan kesalahan menggunakan SweetAlert
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'File yang diunggah bukan file txt.',
+                showConfirmButton: true
+            });
+
+            textarea.value = ''; // Mengosongkan textarea
+        }
+    }
+});
+
+// Fungsi untuk menghitung karakter dengan benar, termasuk karakter khusus
+function countCharacters(text) {
+    var charCount = 0;
+    for (var i = 0; i < text.length; i++) {
+        // Memeriksa apakah karakter saat ini adalah karakter baris baru atau karakter kembali
+        if (text[i] !== '\n' && text[i] !== '\r') {
+            charCount++;
+        }
+    }
+    return charCount;
+}
+
+
+// Membersihkan nilai input file setelah digunakan
+document.getElementById('upload-aes-key-for-encrypt-from-file-button').addEventListener('click', function() {
+    var fileInput = document.getElementById('upload-aes-key-for-encrypt-from-file-input');
+    fileInput.value = null;
+});
+
+
+
+
+// ==================UPLOAD AES KEY FOR DECRYPTION==================
+// Mendengarkan klik pada tombol file untuk AES Key
+document.getElementById('upload-aes-key-for-decrypt-from-file-button').addEventListener('click', function () {
+    // Memicu klik pada input file yang tersembunyi
+    document.getElementById('upload-aes-key-for-decrypt-from-file-input').click();
+});
+
+// Mendengarkan perubahan pada input file untuk AES Key
+document.getElementById('upload-aes-key-for-decrypt-from-file-input').addEventListener('change', function (event) {
+    var fileInput = event.target;
+    var textarea = document.getElementById('aes-key-for-decryption-text');
+    var errorMessageDialog = document.getElementById('dialog-error-upload-aes-key-for-decrypt-from-file');
+
+    // Memastikan bahwa file dipilih
+    if (fileInput.files.length > 0) {
+        var file = fileInput.files[0];
+
+        // Memeriksa ekstensi file
+        var fileName = file.name;
+        var fileExtension = fileName.split('.').pop().toLowerCase();
+
+        if (fileExtension === 'txt') {
+            var reader = new FileReader();
+
+            // Menampilkan loading modal
+            var loadingModal = Swal.fire({
+                title: 'Sedang memproses',
+                text: 'Harap tunggu...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                onBeforeOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Mengatur fungsi callback ketika file selesai dibaca
+            reader.onload = function (e) {
+                // Menutup loading modal
+                loadingModal.close();
+
+                // Mengambil isi file dan mengisinya ke dalam textarea AES Key
+                var fileContent = e.target.result;
+
+                // Memeriksa jumlah karakter dengan benar, termasuk karakter khusus
+                var maxCharacterLimit = 100; // Ganti dengan batas karakter yang diinginkan
+                var actualCharacterCount = countCharacters(fileContent);
+
+                // Menutup loading modal
+                loadingModal.close();
+
+                if (actualCharacterCount > maxCharacterLimit) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Karakter terlalu banyak. Pilih file dengan karakter yang lebih sedikit. Maksimal 100 karakter!',
+                        showConfirmButton: true
+                    });
+
+                    textarea.value = ''; // Mengosongkan textarea
+                } else {
+                    // Mengambil isi file dan mengisinya ke dalam textarea AES Key
+                    textarea.value = fileContent;
+
+                    // Menampilkan modal sukses
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'File berhasil diunggah',
+                        text: 'AES Key berhasil diunggah dari file.',
+                        showConfirmButton: true
+                    });
+
+                    // Menyembunyikan pesan kesalahan
+                    console.log('File berhasil diunggah.');
+                }
+            };
+
+            // Membaca isi file sebagai teks
+            reader.readAsText(file);
+        } else {
+            // Menampilkan pesan kesalahan menggunakan SweetAlert
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'File yang diunggah bukan file txt.',
+                showConfirmButton: true
+            });
+
+            textarea.value = ''; // Mengosongkan textarea
+        }
+    }
+});
+
+// Membersihkan nilai input file setelah digunakan
+document.getElementById('upload-aes-key-for-decrypt-from-file-button').addEventListener('click', function() {
+    var fileInput = document.getElementById('upload-aes-key-for-decrypt-from-file-input');
+    fileInput.value = null;
+});
+
+
+
+
+// ==================UPLOAD AES KEY FOR ENCRYPTION FILE==================
+// Mendengarkan klik pada tombol file untuk AES Key
+document.getElementById('upload-aes-key-for-encrypt-file-from-file-button').addEventListener('click', function () {
+    // Memicu klik pada input file yang tersembunyi
+    document.getElementById('upload-aes-key-for-encrypt-file-from-file-input').click();
+});
+
+// Mendengarkan perubahan pada input file untuk AES Key
+document.getElementById('upload-aes-key-for-encrypt-file-from-file-input').addEventListener('change', function (event) {
+    var fileInput = event.target;
+    var textarea = document.getElementById('aes-key-for-encryption-file');
+    var errorMessageDialog = document.getElementById('dialog-error-upload-aes-key-for-encrypt-file-from-file');
+
+    // Memastikan bahwa file dipilih
+    if (fileInput.files.length > 0) {
+        var file = fileInput.files[0];
+
+        // Memeriksa ekstensi file
+        var fileName = file.name;
+        var fileExtension = fileName.split('.').pop().toLowerCase();
+
+        if (fileExtension === 'txt') {
+            var reader = new FileReader();
+
+            // Menampilkan loading modal
+            var loadingModal = Swal.fire({
+                title: 'Sedang memproses',
+                text: 'Harap tunggu...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                onBeforeOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Mengatur fungsi callback ketika file selesai dibaca
+            reader.onload = function (e) {
+                // Menutup loading modal
+                loadingModal.close();
+
+                // Mengambil isi file dan mengisinya ke dalam textarea AES Key
+                var fileContent = e.target.result;
+
+                // Memeriksa jumlah karakter dengan benar, termasuk karakter khusus
+                var maxCharacterLimit = 100; // Ganti dengan batas karakter yang diinginkan
+                var actualCharacterCount = countCharacters(fileContent);
+
+                if (actualCharacterCount > maxCharacterLimit) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Karakter terlalu banyak. Pilih file dengan karakter yang lebih sedikit. Maksimal 100 karakter!',
+                        showConfirmButton: true
+                    });
+
+                    textarea.value = ''; // Mengosongkan textarea
+                } else {
+                    // Mengambil isi file dan mengisinya ke dalam textarea AES Key
+                    textarea.value = fileContent;
+
+                    // Menampilkan modal sukses
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'File berhasil diunggah',
+                        text: 'AES Key berhasil diunggah dari file.',
+                        showConfirmButton: true
+                    });
+
+                    // Menyembunyikan pesan kesalahan
+                    console.log('File berhasil diunggah.');
+                }
+            };
+
+            // Membaca isi file sebagai teks
+            reader.readAsText(file);
+        } else {
+            // Menampilkan pesan kesalahan menggunakan SweetAlert
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'File yang diunggah bukan file txt.',
+                showConfirmButton: true
+            });
+
+            textarea.value = ''; // Mengosongkan textarea
+        }
+    }
+});
+
+
+// Membersihkan nilai input file setelah digunakan
+document.getElementById('upload-aes-key-for-encrypt-file-from-file-button').addEventListener('click', function() {
+    var fileInput = document.getElementById('upload-aes-key-for-encrypt-file-from-file-input');
+    fileInput.value = null;
+});
+
+
+
+
+
+// ==================UPLOAD AES KEY FOR DECRYPTION FILE==================
+// Mendengarkan klik pada tombol file untuk AES Key
+document.getElementById('upload-aes-key-for-decrypt-file-from-file-button').addEventListener('click', function () {
+    // Memicu klik pada input file yang tersembunyi
+    document.getElementById('upload-aes-key-for-decrypt-file-from-file-input').click();
+});
+
+// Mendengarkan perubahan pada input file untuk AES Key
+document.getElementById('upload-aes-key-for-decrypt-file-from-file-input').addEventListener('change', function (event) {
+    var fileInput = event.target;
+    var textarea = document.getElementById('aes-key-for-decryption-file');
+    var errorMessageDialog = document.getElementById('dialog-error-upload-aes-key-for-decrypt-file-from-file');
+
+    // Memastikan bahwa file dipilih
+    if (fileInput.files.length > 0) {
+        var file = fileInput.files[0];
+
+        // Memeriksa ekstensi file
+        var fileName = file.name;
+        var fileExtension = fileName.split('.').pop().toLowerCase();
+
+        if (fileExtension === 'txt') {
+            var reader = new FileReader();
+
+            // Menampilkan loading modal
+            var loadingModal = Swal.fire({
+                title: 'Sedang memproses',
+                text: 'Harap tunggu...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                onBeforeOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Mengatur fungsi callback ketika file selesai dibaca
+            reader.onload = function (e) {
+                // Menutup loading modal
+                loadingModal.close();
+
+                // Mengambil isi file dan mengisinya ke dalam textarea AES Key
+                var fileContent = e.target.result;
+
+                // Memeriksa jumlah karakter dengan benar, termasuk karakter khusus
+                var maxCharacterLimit = 100; // Ganti dengan batas karakter yang diinginkan
+                var actualCharacterCount = countCharacters(fileContent);
+
+                if (actualCharacterCount > maxCharacterLimit) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Karakter terlalu banyak. Pilih file dengan karakter yang lebih sedikit. Maksimal 100 karakter!',
+                        showConfirmButton: true
+                    });
+
+                    textarea.value = ''; // Mengosongkan textarea
+                } else {
+                    // Mengambil isi file dan mengisinya ke dalam textarea AES Key
+                    textarea.value = fileContent;
+
+                    // Menampilkan modal sukses
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'File berhasil diunggah',
+                        text: 'AES Key berhasil diunggah dari file.',
+                        showConfirmButton: true
+                    });
+
+                    // Menyembunyikan pesan kesalahan
+                    console.log('File berhasil diunggah.');
+                }
+            };
+
+            // Membaca isi file sebagai teks
+            reader.readAsText(file);
+        } else {
+            // Menampilkan pesan kesalahan menggunakan SweetAlert
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'File yang diunggah bukan file txt.',
+                showConfirmButton: true
+            });
+
+            textarea.value = ''; // Mengosongkan textarea
+        }
+    }
+});
+
+
+// Membersihkan nilai input file setelah digunakan
+document.getElementById('upload-aes-key-for-decrypt-file-from-file-button').addEventListener('click', function() {
+    var fileInput = document.getElementById('upload-aes-key-for-decrypt-file-from-file-input');
+    fileInput.value = null;
+});
+
+  // ==============CLEAR DECRYPTION FILE==============
+
+// Mendengarkan klik pada tombol untuk menghapus nilai input
+document.getElementById('clear-input-box-decrypt-file-button').addEventListener('click', function() {
+    // Menghapus nilai dari textarea kunci AES untuk dekripsi file
+    document.getElementById('aes-key-for-decryption-file').value = '';
+
+    // Menghapus nilai dari input file untuk dekripsi file
+    document.getElementById('input-file-for-decryption-aes').value = '';
+});
+
+  // ==============CLEAR ENCRYPTION FILE==============
+// Mendengarkan klik pada tombol untuk menghapus nilai input
+document.getElementById('clear-input-box-encrypt-file-button').addEventListener('click', function() {
+    // Menghapus nilai dari textarea kunci AES untuk enkripsi file
+    document.getElementById('aes-key-for-encryption-file').value = '';
+
+    // Menghapus nilai dari input file untuk enkripsi file
+    document.getElementById('input-file-for-encryption-aes').value = '';
+});
+
+
+  // ==============CLEAR ENCRYPTION BOX==============
+
+// Mendengarkan klik pada tombol untuk menghapus nilai input
+document.getElementById('clear-input-box-encrypt-button').addEventListener('click', function() {
+    // Menghapus nilai dari textarea plaintext
+    document.getElementById('plaintext-aes-text-encryption').value = '';
+    
+    // Menghapus nilai dari textarea kunci AES
+    document.getElementById('aes-key-for-encryption-text').value = '';
+    
+    // Menghapus nilai dari textarea hasil enkripsi AES
+    document.getElementById('result-encrypted-text-aes').value = '';
+    
+    // Mengupdate status ukuran dan karakter textarea plaintext menjadi 0
+    updateStatus('', document.getElementById('input-plaintext-aes-text-encryption-status'));
+});
+
+// Fungsi untuk mengupdate status ukuran dan karakter
+function updateStatus(text, statusElement) {
+    var size = new Blob([text]).size; // Menghitung ukuran dalam byte
+    var charCount = text.length;
+    statusElement.textContent = 'Size: ' + size + ' Bytes, ' + charCount + ' Characters';
+}
+
+
+
+
+
+  // ==============CLEAR DECRYPTION BOX==============
+// Mendengarkan klik pada tombol untuk menghapus nilai input dekripsi
+document.getElementById('clear-input-box-decrypt-button').addEventListener('click', function() {
+    // Menghapus nilai dari textarea ciphertext
+    document.getElementById('ciphertext-aes-text-encryption').value = '';
+    
+    // Menghapus nilai dari textarea kunci AES untuk dekripsi
+    document.getElementById('aes-key-for-decryption-text').value = '';
+    
+    // Menghapus nilai dari textarea hasil dekripsi AES
+    document.getElementById('result-decrypted-text-aes').value = '';
+    
+    // Mengupdate status ukuran dan karakter textarea ciphertext menjadi 0
+    updateStatus('', document.getElementById('input-ciphertext-aes-text-encryption-status'));
+});
+
+// Fungsi untuk mengupdate status ukuran dan karakter
+function updateStatus(text, statusElement) {
+    var size = new Blob([text]).size; // Menghitung ukuran dalam byte
+    var charCount = text.length;
+    statusElement.textContent = 'Size: ' + size + ' Bytes, ' + charCount + ' Characters';
+}
+
+
+
+  // ==================COUNT SIZE AND CHARACTER PLAINTEXT aes==================      
+  // Mendengarkan perubahan pada textarea Plaintext
+  document.getElementById('plaintext-aes-text-encryption').addEventListener('input', function() {
+      var textarea = this;
+      var statusElement = document.getElementById('input-plaintext-aes-text-encryption-status');
+
+      // Menghitung ukuran dan jumlah karakter
+      var size = new Blob([textarea.value]).size; // Menghitung ukuran dalam byte
+      var charCount = textarea.value.length;
+
+      // Menampilkan hasil perhitungan
+      statusElement.textContent = 'Size: ' + size + ' Bytes, ' + charCount + ' Characters';
+  });
+
+  // ==================COUNT SIZE AND CHARACTER CIPHERTEXT aes==================      
+  // Mendengarkan perubahan pada textarea Ciphertext
+  document.getElementById('ciphertext-aes-text-encryption').addEventListener('input', function() {
+      var textarea = this;
+      var statusElement = document.getElementById('input-ciphertext-aes-text-encryption-status');
+
+      // Menghitung ukuran dan jumlah karakter
+      var size = new Blob([textarea.value]).size; // Menghitung ukuran dalam byte
+      var charCount = textarea.value.length;
+
+      // Menampilkan hasil perhitungan
+      statusElement.textContent = 'Size: ' + size + ' Bytes, ' + charCount + ' Characters';
+  });
+
+
+
+// =======================ENCRYPTION FILE AES=======================
+document.getElementById('encrypt-file-button-aes').addEventListener('click', function () {
+    var inputFile = document.getElementById('input-file-for-encryption-aes').files[0];
+    var aesKey = document.getElementById('aes-key-for-encryption-file').value;
+
+    // Maksimum ukuran file (dalam byte)
+    var maxFileSize = 2 * 1024 * 1024 * 1024; // 2 GB
+
+    // Membuat AbortController
+    var abortController = new AbortController();
+
+    if (inputFile && aesKey) {
+        // Pemeriksaan ukuran file
+        if (inputFile.size > maxFileSize) {
+            // Menampilkan alert jika melebihi batas
+            Swal.fire({
+                icon: 'warning',
+                title: 'File Terlalu Besar',
+                text: 'Maksimum ukuran file yang diizinkan adalah 2 GB.',
+                showConfirmButton: true
+            });
+            return; // Menghentikan proses jika ukuran file melebihi batas
+        }
+
+        // Show loading modal with spinner
+        var loadingModal = Swal.fire({
+            title: 'Sedang memproses',
+            text: 'Harap tunggu...',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            showCancelButton: true,
+            cancelButtonText: 'Batal',
+            onBeforeOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // Set the signal abort on the controller
+        var signal = abortController.signal;
+
+        var keyBytes = new TextEncoder().encode(aesKey);
+        var formData = new FormData();
+        formData.append('file', inputFile);
+        formData.append('key', btoa(String.fromCharCode.apply(null, keyBytes)));
+
+        fetch('/encrypt-file-aes', {
+            method: 'POST',
+            body: formData,
+            signal: signal // Add the signal to the fetch
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Pastikan file dan kunci AES yang digunakan valid!');
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                var url = URL.createObjectURL(blob);
+                var originalFilename = inputFile.name.replace(/\.[^/.]+$/, '');
+                var encryptedFilename = `encrypted_${originalFilename}${inputFile.name.slice(originalFilename.length)}.encrypted`;
+
+                var link = document.createElement('a');
+                link.href = url;
+                link.download = encryptedFilename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // Show Success Modal
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Proses enkripsi file AES berhasil',
+                    text: 'Enkripsi file AES berhasil diunduh!',
+                    showConfirmButton: true
+                });
+            })
+            .catch(error => {
+                // Check if the error is an AbortError (user cancellation)
+                if (error.name !== 'AbortError') {
+                    console.error('Encryption error:', error);
+
+                    // Show Error Modal
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Enkripsi File AES Gagal',
+                        text: error.message,
+                        showConfirmButton: true
+                    });
+                }
+            })
+            .finally(() => {
+                // Close SweetAlert2 modal
+                loadingModal.close();
+            });
+    } else {
+        // Show Error Modal
+        Swal.fire({
+            icon: 'warning',
+            title: 'Enkripsi File AES Gagal',
+            text: 'Pastikan sudah menginputkan file dan kunci AES!'
+        });
+    }
+
+    // Add an event listener to the Cancel button
+    Swal.getCancelButton().addEventListener('click', function () {
+        // Disable the warning when the user cancels the request
+        abortController.abort();
+    });
+});
+
+
+
+// =======================DECRYPTION FILE AES=======================
+document.getElementById('decrypt-file-button-aes').addEventListener('click', function () {
+    // Get the selected file from the input
+    var inputFile = document.getElementById('input-file-for-decryption-aes').files[0];
+
+    // Get the AES key from the textarea
+    var aesKey = document.getElementById('aes-key-for-decryption-file').value;
+
+    // Create an AbortController
+    var abortController = new AbortController();
+
+    // Maksimum ukuran file (dalam byte)
+    var maxFileSize = 2 * 1024 * 1024 * 1024; // 2 GB
+
+    // Check if both file and key are provided
+    if (inputFile && aesKey) {
+        // Pemeriksaan ukuran file
+        if (inputFile.size > maxFileSize) {
+            // Menampilkan alert jika melebihi batas
+            Swal.fire({
+                icon: 'warning',
+                title: 'File Terlalu Besar',
+                text: 'Maksimum ukuran file yang diizinkan adalah 2 GB.',
+                showConfirmButton: true
+            });
+            return; // Menghentikan proses jika ukuran file melebihi batas
+        }
+
+        // Show loading modal
+        var loadingModal = Swal.fire({
+            title: 'Sedang memproses',
+            text: 'Harap tunggu...',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            showCancelButton: true,
+            cancelButtonText: 'Batal',
+            onBeforeOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // Read the AES key as bytes
+        var keyBytes = new TextEncoder().encode(aesKey);
+
+        // Create a FormData object to send the file and key to the server
+        var formData = new FormData();
+        formData.append('file', inputFile);
+        formData.append('key', btoa(String.fromCharCode.apply(null, keyBytes))); // Convert key to base64
+
+        // Set the signal abort on the controller
+        var signal = abortController.signal;
+
+        fetch('/decrypt-file-aes', {
+            method: 'POST',
+            body: formData,
+            signal: signal  // Add the signal to the fetch
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Pastikan file dan kunci AES yang digunakan valid!');
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            var url = URL.createObjectURL(blob);
+            var originalFilename = inputFile.name.replace(/\.[^/.]+$/, '');
+
+            var decryptedFilename;
+            if (originalFilename.startsWith('decrypted_')) {
+                decryptedFilename = originalFilename;
+            } else {
+                if (originalFilename.endsWith('.encrypted')) {
+                    decryptedFilename = originalFilename.slice(0, -('.encrypted'.length));
+                } else {
+                    decryptedFilename = `decrypted_${originalFilename}`;
+                }
+            }
+
+            var link = document.createElement('a');
+            link.href = url;
+            link.download = decryptedFilename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Show Success Modal
+            Swal.fire({
+                icon: 'success',
+                title: 'Proses dekripsi file AES berhasil',
+                text: 'Dekripsi file AES berhasil diunduh!',
+                showConfirmButton: true
+            });
+            
+        })
+        .catch(error => {
+            // Check if the error is an AbortError (user cancellation)
+            if (error.name !== 'AbortError') {
+                console.error('Decryption error:', error);
+
+                // Show Error Modal
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Dekripsi File AES Gagal',
+                    text: error.message,
+                    showConfirmButton: true
+                });
+            }
+        })
+        .finally(() => {
+            // Close SweetAlert2 modal
+            loadingModal.close();
+        });
+    } else {
+        // Show Error Modal
+        Swal.fire({
+            icon: 'warning',
+            title: 'Dekripsi File AES Gagal',
+            text: 'Pastikan sudah menginputkan file dan kunci AES!'
+        });
+    }
+
+    // Add an event listener to the Cancel button
+    Swal.getCancelButton().addEventListener('click', function () {
+        // Disable the warning when the user cancels the request
+        abortController.abort();
+    });
+});
+
+
+
+
+
+
+});
+</script>
+
+
+{% endblock javascripts %}

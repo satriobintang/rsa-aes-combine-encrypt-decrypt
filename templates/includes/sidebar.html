@@ -1,0 +1,47 @@
+<div class="sidebar sidebar-dark sidebar-fixed" id="sidebar">
+  <div class="sidebar-brand d-none d-md-flex">
+    <a href="/">
+      <img class="sidebar-brand-full" src="/static/assets/img/logo-sidebar.png" width="158" alt="Cryptool Logo">
+    </a>
+    <img class="sidebar-brand-narrow" src="/static/assets/img/logo-sidebar.png" width="39" alt="Cryptool Logo">
+  </div>
+  <ul class="sidebar-nav" data-coreui="navigation" data-simplebar="">
+    <li class="nav-item">
+      <form onsubmit="window.open('https://www.google.com/search?q='+document.getElementById('q').value+' site:XhCode.com'); return false;" style="display:fle;margin:6px; " name="SearchForm">
+        <div class="input-group mb-3">
+          <input class="form-control" name="q" id="q" type="text" placeholder="Search tools" aria-label="Search tools" aria-describedby="basic-addon2">
+          <span class="input-group-text" onClick="document.SearchForm.onsubmit()">
+            <svg class="icon icon-lg">
+              <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-search"></use>
+            </svg>
+          </span>
+        </div>
+      </form>
+    </li>
+    <li class="nav-group">
+      <a class="nav-link" href="/rsa">
+        </svg>RSA Encryption and Decryption </a>
+    </li>
+    <li class="nav-group">
+      <a class="nav-link" href="/aes">
+        </svg>AES Encryption and Decryption </a>
+    </li>
+    <li class="nav-group">
+      <a class="nav-link" href="/rsa_aes">
+        </svg>RSA and AES Combination </a>
+    </li>
+    <li class="nav-group">
+      <ul class="nav-group-items">
+        <li class="nav-item">
+          <a class="nav-link" href="/#formatter">sitemap</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/converter/#converter-csv">Convert tools</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/beautify/#tool-formatter">Beautify Tools</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>

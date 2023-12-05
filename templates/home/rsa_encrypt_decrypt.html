@@ -1,0 +1,1546 @@
+<!-- File: rsa_encrypt_decrypt.html -->
+{% extends 'layouts/base.html' %}
+
+{% block title %}RSA Encryption/Decryption{% endblock %}
+
+{% block content %}
+
+<header class="header header-sticky mb-4">
+  <div class="container-fluid">
+    <button class="header-toggler px-md-0 me-md-3" type="button" onclick="if (!window.__cfRLUnblockHandlers) return false; coreui.Sidebar.getInstance(document.querySelector('#sidebar')).toggle()">
+      <svg class="icon icon-lg">
+        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-menu"></use>
+      </svg>
+    </button>
+    <a class="header-brand d-md-none" href="/">
+      <img class="sidebar-brand-full" src="/static/assets/img/logo.png" width="128" alt="XhCode Logo">
+    </a>
+    <ul class="header-nav d-none d-md-flex">
+      <li class="nav-item">Cryptool</li>
+    </ul>
+    <nav class="header-nav ms-auto me-4"></nav>
+    <ul class="header-nav me-3 d-md-flex">
+      <li class="nav-item dropdown d-md-down-none">
+        <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+          <input class="btn-check" id="btn-light-theme" type="radio" name="theme-switch" autocomplete="off" value="light" onchange="handleThemeChange(this)">
+          <label class="btn btn-primary" for="btn-light-theme">
+            <svg class="icon">
+              <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-sun"></use>
+            </svg>
+          </label>
+          <input class="btn-check" id="btn-dark-theme" type="radio" name="theme-switch" autocomplete="off" value="dark" onchange="handleThemeChange(this)">
+          <label class="btn btn-primary" for="btn-dark-theme">
+            <svg class="icon">
+              <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-moon"></use>
+            </svg>
+          </label>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="header-divider d-none d-md-flex"></div>
+  <div class="container-fluid d-none d-md-flex">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb my-0 ms-2">
+        <!-- Generate Key Button -->
+        <div class="ms-auto">
+          <a href="#" id="generate-rsa-key-button-section" class="btn btn-ghost-primary">Generate RSA Key</a>
+        </div>
+        <!-- AES Encrypt Button -->
+        <div class="ms-auto">
+          <a href="#" id="encrypt-rsa-button-section" class="btn btn-ghost-primary">RSA Encrypt</a>
+        </div>
+        <!-- AES Decrypt Button -->
+        <div class="ms-auto">
+          <a href="#" id="decrypt-rsa-button-section" class="btn btn-ghost-primary">RSA Decrypt</a>
+        </div>
+      </ol>
+    </nav>
+  </div>
+</header>
+
+<div class="body flex-grow-1 px-3">
+  <div class="container-lg">
+    <link href="/static/css/skin.css" rel="stylesheet" type="text/css" />
+    <div class="accordion" id="accordion2">
+      <div class="accordion-group">
+
+        <!-- ISI KONTEN SEMUA -->
+        <!-- Generate Key Section -->
+        <div id="generate-rsa-key-section" class="toggle-section" style="display: none;">
+
+            <ul class="nav nav-tabs hbflag">
+              <li role="presentation" class="title">RSA Generate Key</li>
+            </ul>
+            <div class="panel">
+              <form id="form-generate-rsa-key" class="form-horizontal" method="post">
+                <div class="form-group">
+                  <div class="col-sm-12">
+                    <span class="label label-default">Select the RSA key length :</span>
+                    <p></p>
+                    <select id="key-length-rsa" class="form-select">
+                      <option value="1024">1024</option>
+                      <option value="2048">2048</option>
+                      <option value="4096">4096</option>
+                    </select>
+                    <div class="form-group">
+                      <div class="col-sm-12">
+                        <button id="generate-rsa-key" class="btn btn-success" type="button">
+                          <svg class="icon me-2">
+                            <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-sync"></use>
+                          </svg>Generate RSA Key </button>
+                          <button id="clear-input-box-generate-key-rsa-button" class="btn btn-success" type="button">
+                            <svg class="icon me-2">
+                              <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-clear-all"></use>
+                            </svg>Clear Input Box </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-6">
+                    <span class="label label-default">Public Key :</span>
+                    <p></p>
+                    <textarea onmouseover="this.focus();" id="result-generated-key-public-key-rsa" name="result-generated-key-public-key-rsa" class="form-control" rows="10" style="max-height: 2222px;" placeholder="Generated Public Key Results"></textarea>
+                    <div class="form-group">
+ 
+                      <button id="copy-public-key-rsa-button" class="btn btn-success" type="button">
+                        <svg class="icon me-2">
+                          <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-copy"></use>
+                        </svg>Copy Public Key </button>
+                      <button id="save-public-key-button" class="btn btn-success" type="button">
+                        <svg class="icon me-2">
+                          <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-save"></use>
+                        </svg>Save Public key </button>
+                      <!-- Tambahkan id untuk pesan kesalahan di dalam modal -->
+                      <div class="modal fade" id="dialog-error-download-public-key" tabindex="-1" aria-labelledby="dialog-error-download-public-key" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="exampleModalCenterTitle">Error</h5>
+                              <button class="btn-close" type="button" data-coreui-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              <p id="error-message-download-public-key-dialog"></p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <span class="label label-default">Private Key :</span>
+                    <p></p>
+                    <textarea onmouseover="this.focus();" id="result-generated-key-private-key-rsa" name="result-generated-key-private-key-rsa" class="form-control" rows="10" style="max-height: 2222px;" placeholder="Generated Private Key Results"></textarea>
+                    <div class="form-group">
+                      <button id="copy-private-key-rsa-button" class="btn btn-success" type="button">
+                        <svg class="icon me-2">
+                          <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-copy"></use>
+                        </svg>Copy Private Key </button>
+                      <button id="save-private-key-button" class="btn btn-success" type="button">
+                        <svg class="icon me-2">
+                          <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-save"></use>
+                        </svg>Save Private Key </button>
+                      <!-- Tambahkan id untuk pesan kesalahan di dalam modal -->
+                      <div class="modal fade" id="dialog-error-download-private-key" tabindex="-1" aria-labelledby="dialog-error-download-private-key" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="exampleModalCenterTitle">Error</h5>
+                              <button class="btn-close" type="button" data-coreui-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              <p id="error-message-download-private-key-dialog"></p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+        </div>
+
+
+
+      </div>
+
+
+
+
+
+      <!-- TEMPAT SIMPLYFY BARU ENKRIPSI -->
+      <!-- AES Encrypt Section -->
+      <div id="encrypt-rsa-section" class="toggle-section" style="display: none;">
+          <ul class="nav nav-tabs hbflag">
+            <li role="presentation" class="title">RSA encryption</li>
+          </ul>
+          <div class="panel">
+            <form id="form1" class="form-horizontal" action="index.htm" method="post">
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <span class="label label-default">Enter Public Key :</span>
+                  <p></p>
+                  <textarea onmouseover="this.focus();" id="encryption-key-public-key-rsa" name="encryption-key-public-key-rsa" class="form-control" rows="10" style="max-height: 2222px;" placeholder="Please enter the public key to encrypt RSA"></textarea>
+
+                  <div class="form-group">
+                    <button id="upload-public-key-from-file-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                      </svg>Upload Public Key (.pem file) <input id="upload-public-key-from-file-input" class="upload-public-key-from-file-input" type="file" style="display: none;" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="d-flex justify-content-between align-items-start">
+
+                    <span class="label label-default">Enter text to be Encrypted :</span>
+                    <p></p>
+
+                    <div id="input-plaintext-rsa-text-encryption-status" class="text-end"> Size: 0 Bytes, 0 Characters </div>
+
+                  </div>
+
+                  <p></p>
+                  <textarea onmouseover="this.focus();" id="plaintext-rsa-text-encryption" name="plaintext-rsa-text-encryption" class="form-control" rows="10" style="max-height: 2222px;" placeholder="Please enter the text to be encrypted or decrypted"></textarea>
+
+                  <div class="form-group">
+                    <button id="encrypt-text-button-rsa" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-lock-locked"></use>
+                      </svg>RSA Encryption </button>
+
+                      <button id="upload-plaintext-rsa-from-file-button" class="btn btn-success" type="button">
+                        <svg class="icon me-2">
+                          <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                        </svg>Upload Plaintext (.txt file) <input id="upload-plaintext-rsa-from-file-input" class="upload-plaintext-rsa-from-file-button" type="file" style="display: none;" />
+                      </button>
+                  </div>
+
+                </div>
+
+
+
+                <div class="col-sm-6">
+                  <span class="label label-default">RSA Encrypted Output: :</span>
+                  <p></p>
+                  <textarea onmouseover="this.focus();" id="result-encrypted-text-rsa" name="result-encrypted-text-rsa" class="form-control" rows="10" style="max-height: 2222px;" placeholder="The resulting encryption results"></textarea>
+
+                  <div class="form-group">
+                    <button id="copy-encrypted-text-rsa-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-copy"></use>
+                      </svg>Copy Result Encrypt </button>
+
+                      <button id="save-encrypted-text-rsa-button" class="btn btn-success" type="button">
+                        <svg class="icon me-2">
+                          <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-save"></use>
+                        </svg>Save RSA Encrypted Results </button>
+
+                        <button id="clear-input-box-encrypt-button" class="btn btn-success" type="button">
+                          <svg class="icon me-2">
+                            <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-clear-all"></use>
+                          </svg>Clear Input Box </button>
+      
+
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+
+          
+      </div>
+    </div>
+
+
+
+    <!-- TEMPAT SIMPLYFY BARU ENKRIPSI -->
+    <!-- TEMPAT SIMPLYFY BARU DEKRIPSI-->
+    <!-- AES Decrypt Section -->
+    <div id="decrypt-rsa-section" class="toggle-section" style="display: none;">
+        <ul class="nav nav-tabs hbflag">
+          <li role="presentation" class="title">RSA decryption</li>
+        </ul>
+        <div class="panel">
+          <form id="form1" class="form-horizontal" action="index.htm" method="post">
+            <div class="form-group">
+              <div class="col-sm-12">
+                <span class="label label-default">Private Key :</span>
+                <p></p>
+                <textarea onmouseover="this.focus();" id="decryption-key-private-key-rsa" name="decryption-key-private-key-rsa" class="form-control" rows="10" style="max-height: 2222px;" placeholder="Please enter the private key to decrypt RSA"></textarea>
+
+                <div class="form-group">
+                  <button id="upload-private-key-from-file-button" class="btn btn-success" type="button">
+                    <svg class="icon me-2">
+                      <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                    </svg>Upload Private Key (.pem file) <input id="upload-private-key-from-file-input" class="upload-private-key-from-file-input" type="file" style="display: none;" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+
+
+
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="d-flex justify-content-between align-items-start">
+                  <span class="label label-default">Enter text to be Decrypted :</span>
+                  <p></p>
+                  <div id="input-ciphertext-rsa-text-encryption-status" class="text-end"> Size: 0 Bytes, 0 Characters </div>
+                </div>
+                <p></p>
+                <textarea onmouseover="this.focus();" id="ciphertext-rsa-text-encryption" name="ciphertext-rsa-text-encryption" class="form-control" rows="10" style="max-height: 2222px;" placeholder="Please enter the text to be encrypted or decrypted"></textarea>
+
+                <div class="form-group">
+                  <button id="decrypt-text-button-rsa" class="btn btn-success" type="button">
+                    <svg class="icon me-2">
+                      <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-lock-unlocked"></use>
+                    </svg>RSA Decryption </button>
+
+                    <button id="upload-ciphertext-rsa-from-file-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-file"></use>
+                      </svg>Upload Ciphertext (.txt file) <input id="upload-ciphertext-rsa-from-file-input" class="upload-ciphertext-rsa-from-file-button" type="file" style="display: none;" />
+                    </button>
+                </div>
+              </div>
+
+
+              <div class="col-sm-6">
+
+                <span class="label label-default">RSA Decrypted Output: :</span>
+                <p></p>
+                <textarea onmouseover="this.focus();" id="result-decrypted-text-rsa" name="result-decrypted-text-rsa" class="form-control" rows="10" style="max-height: 2222px;" placeholder="The resulting encryption / decryption results"></textarea>
+
+                <div class="form-group">
+                  <button id="copy-decrypted-text-rsa-button" class="btn btn-success" type="button">
+                    <svg class="icon me-2">
+                      <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-copy"></use>
+                    </svg>Copy Result Decrypt </button>
+                  <button id="save-decrypted-text-rsa-button" class="btn btn-success" type="button">
+                    <svg class="icon me-2">
+                      <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-save"></use>
+                    </svg>Save RSA Decrypted Results </button>
+
+                    <button id="clear-input-box-decrypt-button" class="btn btn-success" type="button">
+                      <svg class="icon me-2">
+                        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-clear-all"></use>
+                      </svg>Clear Input Box </button>
+
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+       
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}
+
+{% block javascripts %}
+   <!-- Include your JavaScript at the end of the file -->
+<script src="/static/js/sweetalert2@11.js"></script>
+
+
+      <!-- Include your JavaScript at the end of the file -->
+      <script src="/static/js/jquery-3.6.4.min.js"></script>
+
+
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+// Function to show/hide sections based on button click
+function toggleSection(sectionId) {
+    // Hide all sections
+    document.querySelectorAll('.toggle-section').forEach(section => {
+      section.style.display = 'none';
+    });
+
+    // Show the selected section
+    document.getElementById(sectionId).style.display = 'block';
+
+    // Update button classes based on active state
+    updateButtonClasses(sectionId);
+  }
+
+  // Function to update button classes based on active state
+  function updateButtonClasses(activeSectionId) {
+    // Reset classes for all buttons
+    document.getElementById('generate-rsa-key-button-section').classList.remove('active');
+    document.getElementById('encrypt-rsa-button-section').classList.remove('active');
+    document.getElementById('decrypt-rsa-button-section').classList.remove('active');
+
+    // Set active class for the button corresponding to the active section
+    if (activeSectionId === 'generate-rsa-key-section') {
+      document.getElementById('generate-rsa-key-button-section').classList.add('active');
+    } else if (activeSectionId === 'encrypt-rsa-section') {
+      document.getElementById('encrypt-rsa-button-section').classList.add('active');
+    } else if (activeSectionId === 'decrypt-rsa-section') {
+      document.getElementById('decrypt-rsa-button-section').classList.add('active');
+    }
+  }
+
+  // Event listener for "Generate Key" button
+  document.getElementById('generate-rsa-key-button-section').addEventListener('click', function (e) {
+    e.preventDefault(); // Prevent the default behavior of the link
+    toggleSection('generate-rsa-key-section');
+  });
+
+  // Event listener for "AES Encrypt" button
+  document.getElementById('encrypt-rsa-button-section').addEventListener('click', function (e) {
+    e.preventDefault(); // Prevent the default behavior of the link
+    toggleSection('encrypt-rsa-section');
+  });
+
+  // Event listener for "AES Decrypt" button
+  document.getElementById('decrypt-rsa-button-section').addEventListener('click', function (e) {
+    e.preventDefault(); // Prevent the default behavior of the link
+    toggleSection('decrypt-rsa-section');
+  });
+
+  // Show "Generate Key" section by default when the page loads
+  toggleSection('generate-rsa-key-section');
+
+
+// ==================BUTTON GENERATE KEY FUNCTION RSA==================          
+// Generate RSA Key
+document.getElementById('generate-rsa-key').addEventListener('click', function () {
+    var keyLength = document.getElementById('key-length-rsa').value;
+
+    // Menampilkan loading modal
+    var loadingModal = Swal.fire({
+        title: 'Sedang memproses',
+        text: 'Harap tunggu...',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        onBeforeOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch('/generate-key-rsa', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'key-length=' + keyLength,
+    })
+        .then(response => response.json())
+        .then(data => {
+            // Menutup loading modal
+            loadingModal.close();
+
+            // Mengisi nilai hasil generate ke dalam textarea
+            document.getElementById('result-generated-key-public-key-rsa').value = data.public_key;
+            document.getElementById('result-generated-key-private-key-rsa').value = data.private_key;
+
+            // Menampilkan modal sukses
+            Swal.fire({
+                icon: 'success',
+                title: 'Kunci berhasil digenerate',
+                text: 'Kunci RSA berhasil digenerate.',
+                showConfirmButton: true
+            });
+        })
+        .catch(error => {
+            // Menutup loading modal
+            loadingModal.close();
+
+            // Menampilkan pesan kesalahan menggunakan SweetAlert
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Terjadi kesalahan saat mengenerate kunci RSA.',
+                showConfirmButton: true
+            });
+
+            console.error('Error:', error);
+        });
+});
+
+
+
+// ==================BUTTON ENCRYPTION FUNCTION RSA==================
+// RSA Encryption
+document.getElementById('encrypt-text-button-rsa').addEventListener('click', function () {
+    var publicKey = document.getElementById('encryption-key-public-key-rsa').value;
+    var plaintext = document.getElementById('plaintext-rsa-text-encryption').value;
+
+    // Check if publicKey and plaintext are provided
+    if (!publicKey || !plaintext) {
+        // Show Error Modal
+        Swal.fire({
+            icon: 'warning',
+            title: 'Enkripsi Teks RSA Gagal',
+            text: 'Pastikan sudah menginputkan kunci publik dan plaintext!',
+            showConfirmButton: true
+        });
+        return; // Exit the function if publicKey or plaintext is missing
+    }
+
+    // Check if plaintext length exceeds the maximum allowed length
+    var keyLength = getRsaKeyLength(publicKey);
+    var maxByteLength = getMaxByteLength(keyLength);
+    var plaintextByteLength = new TextEncoder().encode(plaintext).length;
+
+    if (plaintextByteLength > maxByteLength) {
+        // Show Error Modal with detailed information
+        Swal.fire({
+            icon: 'error',
+            title: 'Enkripsi Teks RSA Gagal',
+            html: `Panjang teks melebihi batas maksimum untuk panjang bit kunci RSA yang digunakan!<br>
+                   Jumlah karakter sekarang: ${plaintextByteLength}<br>
+                   Batas maksimal: ${maxByteLength}`,
+            showConfirmButton: true
+        });
+        return; // Exit the function if plaintext length exceeds the maximum allowed length
+    }
+
+    // Show loading modal
+    var loadingModal = Swal.fire({
+        title: 'Sedang memproses',
+        text: 'Harap tunggu...',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        onBeforeOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch('/encrypt-rsa', {
+        method: 'POST',
+        body: new URLSearchParams({ 'public-key-encrypt': publicKey, 'plaintext': plaintext }),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Encryption failed');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.hasOwnProperty('error')) {
+                // Show Error Modal
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Enkripsi Teks RSA Gagal',
+                    text: 'Pastikan kunci publik dan plaintext yang digunakan valid!',
+                    showConfirmButton: true
+                });
+            } else {
+                // Show Success Modal
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Proses enkripsi file RSA berhasil',
+                    text: 'Enkripsi RSA berhasil!',
+                    showConfirmButton: true
+                });
+
+                document.getElementById('result-encrypted-text-rsa').value = data.ciphertext;
+            }
+        })
+        .catch(error => {
+            // Show Error Modal
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message,
+                showConfirmButton: true
+            });
+        })
+        .finally(() => {
+            // Close SweetAlert2 modal
+            loadingModal.close();
+        });
+});
+
+// Fungsi untuk mendapatkan panjang bit kunci RSA dari kunci publik
+function getRsaKeyLength(publicKey) {
+    try {
+        var parsedKey = new JSEncrypt();
+        parsedKey.setPublicKey(publicKey);
+        return parsedKey.getKey().n.bitLength();
+    } catch (error) {
+        return 0;
+    }
+}
+
+// Fungsi untuk memeriksa apakah teks adalah base64-encoded
+function isValidBase64(text) {
+    try {
+        return btoa(atob(text)) == text;
+    } catch (e) {
+        return false;
+    }
+}
+
+function getMaxByteLength(keyLength) {
+    const maxByteLengthMap = {
+        '1024': 62,
+        '2048': 190,
+        '3072': 318,
+        '4096': 446,
+        '8192': 958
+    };
+    return maxByteLengthMap[keyLength] || 62;
+}
+
+
+
+
+// ==================BUTTON DECRYPTION FUNCTION RSA==================           
+document.getElementById('decrypt-text-button-rsa').addEventListener('click', function () {
+    var privateKey = document.getElementById('decryption-key-private-key-rsa').value;
+    var ciphertext = document.getElementById('ciphertext-rsa-text-encryption').value;
+
+    // Check if privateKey and ciphertext are provided
+    if (!privateKey || !ciphertext) {
+        // Show Error Modal
+        Swal.fire({
+            icon: 'warning',
+            title: 'Dekripsi Teks RSA Gagal',
+            text: 'Pastikan sudah menginputkan kunci privat dan ciphertext!',
+            showConfirmButton: true
+        });
+        return; // Exit the function if privateKey or ciphertext is missing
+    }
+
+    // Show loading modal
+    var loadingModal = Swal.fire({
+        title: 'Sedang memproses',
+        text: 'Harap tunggu...',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        onBeforeOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch('/decrypt-rsa', {
+        method: 'POST',
+        body: new URLSearchParams({ 'private-key-decrypt': privateKey, 'ciphertext-decrypt': ciphertext }),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Decryption failed');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.hasOwnProperty('error')) {
+                // Show Error Modal
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Dekripsi Teks RSA Gagal',
+                    text: 'Pastikan kunci privat dan ciphertext yang digunakan valid!',
+                    showConfirmButton: true
+                });
+            } else {
+                // Show Success Modal
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Proses dekripsi file RSA berhasil',
+                    text: 'Dekripsi RSA berhasil!',
+                    showConfirmButton: true
+                });
+
+                document.getElementById('result-decrypted-text-rsa').value = data.plaintext;
+            }
+        })
+        .catch(error => {
+            // Show Error Modal
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message,
+                showConfirmButton: true
+            });
+        })
+        .finally(() => {
+            // Close SweetAlert2 modal
+            loadingModal.close();
+        });
+});
+
+
+
+
+// ==================COPY PUBLIC KEY RSA==================           
+document.getElementById('copy-public-key-rsa-button').addEventListener('click', function() {
+    var publicKeyTextArea = document.getElementById('result-generated-key-public-key-rsa');
+    publicKeyTextArea.select();
+    document.execCommand('copy');
+});
+// ==================COPY PRIVATE KEY RSA==================           
+document.getElementById('copy-private-key-rsa-button').addEventListener('click', function() {
+    var publicKeyTextArea = document.getElementById('result-generated-key-private-key-rsa');
+    publicKeyTextArea.select();
+    document.execCommand('copy');
+});
+
+
+
+
+
+
+
+
+
+
+
+
+// ==================COPY ENCRYPTED TEXT RSA==================      
+document.getElementById('copy-encrypted-text-rsa-button').addEventListener('click', function() {
+    var publicKeyTextArea = document.getElementById('result-encrypted-text-rsa');
+    publicKeyTextArea.select();
+    document.execCommand('copy');
+});
+// ==================COPY DECRYPTED TEXT RSA==================      
+document.getElementById('copy-decrypted-text-rsa-button').addEventListener('click', function() {
+    var publicKeyTextArea = document.getElementById('result-decrypted-text-rsa');
+    publicKeyTextArea.select();
+    document.execCommand('copy');
+});
+
+
+
+
+// ==================SAVE PUBLIC KEY==================
+document.getElementById('save-public-key-button').addEventListener('click', function() {
+    var publicKeyTextArea = document.getElementById('result-generated-key-public-key-rsa');
+    var publicKeyText = publicKeyTextArea.value;
+
+    // Check if the generated public key text is empty
+    if (!publicKeyText.trim()) {
+        // Show Error Modal
+        Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            text: 'Tidak ada public key dalam textarea!',
+            showConfirmButton: true
+        });
+        return; // Exit the function if there is no value
+    }
+
+    // Show loading modal
+    var loadingModal = Swal.fire({
+        title: 'Sedang memproses',
+        text: 'Harap tunggu...',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        onBeforeOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    try {
+        // Create a Blob object from the text
+        var blob = new Blob([publicKeyText], {
+            type: 'text/plain'
+        });
+
+        // Create a link element for downloading
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = 'Public_key_generated_result.pem';
+
+        // Add the link element to the document
+        document.body.appendChild(link);
+
+        // Click on the link automatically
+        link.click();
+
+        // Remove the link element from the document
+        document.body.removeChild(link);
+
+        // Show Success Modal
+        Swal.fire({
+            icon: 'success',
+            title: 'Proses penyimpanan berhasil',
+            text: 'Public key saved successfully',
+            showConfirmButton: true
+        });
+    } catch (error) {
+        // Show Error Modal
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error during download: ' + error.message,
+            showConfirmButton: true
+        });
+    } finally {
+        // Close SweetAlert2 modal
+        loadingModal.close();
+    }
+});
+
+
+
+// ==================SAVE PRIVATE KEY==================
+document.getElementById('save-private-key-button').addEventListener('click', function() {
+    var privateKeyTextArea = document.getElementById('result-generated-key-private-key-rsa');
+    var privateKeyText = privateKeyTextArea.value;
+
+    // Check if the generated private key text is empty
+    if (!privateKeyText.trim()) {
+        // Show Error Modal
+        Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            text: 'Tidak ada private key dalam textarea!',
+            showConfirmButton: true
+        });
+        return; // Exit the function if there is no value
+    }
+
+    // Show loading modal
+    var loadingModal = Swal.fire({
+        title: 'Sedang memproses',
+        text: 'Harap tunggu...',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        onBeforeOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    try {
+        // Create a Blob object from the text
+        var blob = new Blob([privateKeyText], {
+            type: 'text/plain'
+        });
+
+        // Create a link element for downloading
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = 'Private_key_generated_result.pem';
+
+        // Add the link element to the document
+        document.body.appendChild(link);
+
+        // Click on the link automatically
+        link.click();
+
+        // Remove the link element from the document
+        document.body.removeChild(link);
+
+        // Show Success Modal
+        Swal.fire({
+            icon: 'success',
+            title: 'Proses penyimpanan berhasil',
+            text: 'Private key saved successfully',
+            showConfirmButton: true
+        });
+    } catch (error) {
+        // Show Error Modal
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error during download: ' + error.message,
+            showConfirmButton: true
+        });
+    } finally {
+        // Close SweetAlert2 modal
+        loadingModal.close();
+    }
+});
+
+
+
+
+// ==================SAVE ENCRYPTED RSA==================
+document.getElementById('save-encrypted-text-rsa-button').addEventListener('click', function() {
+    var encryptedResultsTextArea = document.getElementById('result-encrypted-text-rsa');
+    var encryptedResultsText = encryptedResultsTextArea.value;
+
+    // Check if the encrypted RSA text is empty
+    if (!encryptedResultsText.trim()) {
+        // Show Error Modal
+        Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            text: 'Tidak ada teks terenkripsi RSA dalam textarea!',
+            showConfirmButton: true
+        });
+        return; // Exit the function if there is no value
+    }
+
+    // Show loading modal
+    var loadingModal = Swal.fire({
+        title: 'Sedang memproses',
+        text: 'Harap tunggu...',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        onBeforeOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    try {
+        // Create a Blob object from the text
+        var blob = new Blob([encryptedResultsText], {
+            type: 'text/plain'
+        });
+
+        // Create a link element for downloading
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = 'Encrypted_RSA_text_result.txt';
+
+        // Add the link element to the document
+        document.body.appendChild(link);
+
+        // Click on the link automatically
+        link.click();
+
+        // Remove the link element from the document
+        document.body.removeChild(link);
+
+        // Show Success Modal
+        Swal.fire({
+            icon: 'success',
+            title: 'Proses penyimpanan berhasil',
+            text: 'Encrypted RSA text saved successfully',
+            showConfirmButton: true
+        });
+    } catch (error) {
+        // Show Error Modal
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error during download: ' + error.message,
+            showConfirmButton: true
+        });
+    } finally {
+        // Close SweetAlert2 modal
+        loadingModal.close();
+    }
+});
+
+
+
+// ==================SAVE DECRYPTED RSA==================
+document.getElementById('save-decrypted-text-rsa-button').addEventListener('click', function() {
+    var decryptedResultsTextArea = document.getElementById('result-decrypted-text-rsa');
+    var decryptedResultsText = decryptedResultsTextArea.value;
+
+    // Check if the decrypted RSA text is empty
+    if (!decryptedResultsText.trim()) {
+        // Show Error Modal
+        Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            text: 'Tidak ada teks terdekripsi RSA dalam textarea!',
+            showConfirmButton: true
+        });
+        return; // Exit the function if there is no value
+    }
+
+    // Show loading modal
+    var loadingModal = Swal.fire({
+        title: 'Sedang memproses',
+        text: 'Harap tunggu...',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        showCancelButton: true,
+        cancelButtonText: 'Batal',
+        onBeforeOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    try {
+        // Create a Blob object from the text
+        var blob = new Blob([decryptedResultsText], {
+            type: 'text/plain'
+        });
+
+        // Create a link element for downloading
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = 'Decrypted_RSA_text_result.txt';
+
+        // Add the link element to the document
+        document.body.appendChild(link);
+
+        // Click on the link automatically
+        link.click();
+
+        // Remove the link element from the document
+        document.body.removeChild(link);
+
+        // Show Success Modal
+        Swal.fire({
+            icon: 'success',
+            title: 'Proses penyimpanan berhasil',
+            text: 'Decrypted RSA text saved successfully',
+            showConfirmButton: true
+        });
+    } catch (error) {
+        // Show Error Modal
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error during download: ' + error.message,
+            showConfirmButton: true
+        });
+    } finally {
+        // Close SweetAlert2 modal
+        loadingModal.close();
+    }
+});
+
+
+
+
+
+// ==================UPLOAD CIPHERTEXT RSA==================
+// Mendengarkan klik pada tombol file
+document.getElementById('upload-ciphertext-rsa-from-file-button').addEventListener('click', function () {
+    // Memicu klik pada input file yang tersembunyi
+    document.getElementById('upload-ciphertext-rsa-from-file-input').click();
+});
+
+// Mendengarkan perubahan pada input file Ciphertext
+document.getElementById('upload-ciphertext-rsa-from-file-input').addEventListener('change', function (event) {
+    var fileInput = event.target;
+    var textarea = document.getElementById('ciphertext-rsa-text-encryption');
+    var statusElement = document.getElementById('input-ciphertext-rsa-text-encryption-status');
+
+    // Memastikan bahwa file dipilih
+    if (fileInput.files.length > 0) {
+        var file = fileInput.files[0];
+
+        // Memeriksa ekstensi file
+        var fileName = file.name;
+        var fileExtension = fileName.split('.').pop().toLowerCase();
+
+        if (fileExtension === 'txt') {
+            var reader = new FileReader();
+
+            // Menampilkan loading modal
+            var loadingModal = Swal.fire({
+                title: 'Sedang memproses',
+                text: 'Harap tunggu...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                onBeforeOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Mengatur fungsi callback ketika file selesai dibaca
+            reader.onload = function (e) {
+                // Menutup loading modal
+                loadingModal.close();
+
+                // Mengambil isi file dan mengisinya ke dalam textarea
+                var fileContent = e.target.result;
+
+                // Memeriksa jumlah karakter
+                var maxCharacterLimit = 1000; // Ganti dengan batas karakter yang diinginkan
+                var actualCharacterCount = countCharacters(fileContent);
+
+                if (actualCharacterCount > maxCharacterLimit) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Karakter terlalu banyak. Pilih file dengan karakter yang lebih sedikit. Maksimal 1000 karakter!',
+                        showConfirmButton: true
+                    });
+
+                    textarea.value = ''; // Mengosongkan textarea
+                    updateStatus('', statusElement); // Reset status to 0 Bytes, 0 Characters
+                } else {
+                    // Mengambil isi file dan mengisinya ke dalam textarea
+                    textarea.value = fileContent;
+
+                    // Menampilkan status ukuran dan karakter
+                    updateStatus(textarea.value, statusElement);
+
+                    // Menampilkan modal sukses
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'File berhasil diunggah',
+                        text: 'Ciphertext berhasil diunggah dari file.',
+                        showConfirmButton: true
+                    });
+                }
+            };
+
+            // Membaca isi file sebagai teks
+            reader.readAsText(file);
+        } else {
+            // Menampilkan pesan kesalahan menggunakan SweetAlert
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'File yang diunggah bukan file txt.',
+                showConfirmButton: true
+            });
+
+            textarea.value = ''; // Mengosongkan textarea
+            updateStatus('', statusElement); // Reset status to 0 Bytes, 0 Characters
+        }
+    }
+});
+
+
+
+
+// Membersihkan nilai input file setelah digunakan
+document.getElementById('upload-ciphertext-rsa-from-file-button').addEventListener('click', function() {
+    var fileInput = document.getElementById('upload-ciphertext-rsa-from-file-input');
+    fileInput.value = null;
+});
+
+// Mendengarkan perubahan pada textarea
+document.getElementById('ciphertext-rsa-text-encryption').addEventListener('input', function() {
+    updateStatus(this.value, document.getElementById('input-ciphertext-rsa-text-encryption-status'));
+});
+
+// Fungsi untuk mengupdate status ukuran dan karakter
+function updateStatus(text, statusElement) {
+    var size = new Blob([text]).size; // Menghitung ukuran dalam byte
+    var charCount = text.length;
+    statusElement.textContent = 'Size: ' + size + ' Bytes, ' + charCount + ' Characters';
+}
+
+
+
+// ==================UPLOAD PLAINTEXT RSA==================
+// Mendengarkan klik pada tombol file
+document.getElementById('upload-plaintext-rsa-from-file-button').addEventListener('click', function() {
+    // Memicu klik pada input file yang tersembunyi
+    document.getElementById('upload-plaintext-rsa-from-file-input').click();
+});
+
+// Mendengarkan perubahan pada input file Plaintext
+document.getElementById('upload-plaintext-rsa-from-file-input').addEventListener('change', function(event) {
+    var fileInput = event.target;
+    var textarea = document.getElementById('plaintext-rsa-text-encryption');
+    var statusElement = document.getElementById('input-plaintext-rsa-text-encryption-status');
+
+    // Memastikan bahwa file dipilih
+    if (fileInput.files.length > 0) {
+        var file = fileInput.files[0];
+
+        // Memeriksa ekstensi file
+        var fileName = file.name;
+        var fileExtension = fileName.split('.').pop().toLowerCase();
+
+        if (fileExtension === 'txt') {
+            var reader = new FileReader();
+
+            // Menampilkan loading modal
+            var loadingModal = Swal.fire({
+                title: 'Sedang memproses',
+                text: 'Harap tunggu...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                onBeforeOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Mengatur fungsi callback ketika file selesai dibaca
+            reader.onload = function(e) {
+                // Menutup loading modal
+                loadingModal.close();
+
+                // Mengambil isi file dan mengisinya ke dalam textarea
+                var fileContent = e.target.result;
+
+                // Memeriksa jumlah karakter
+                var maxCharacterLimit = 1000; // Ganti dengan batas karakter yang diinginkan
+                var actualCharacterCount = countCharacters(fileContent);
+
+                if (actualCharacterCount > maxCharacterLimit) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Karakter terlalu banyak. Pilih file dengan karakter yang lebih sedikit. Maksimal 1000 karakter!',
+                        showConfirmButton: true
+                    });
+
+                    textarea.value = ''; // Mengosongkan textarea
+                    updateStatus('', statusElement); // Reset status to 0 Bytes, 0 Characters
+                } else {
+                    // Mengambil isi file dan mengisinya ke dalam textarea
+                    textarea.value = fileContent;
+
+                    // Menampilkan status ukuran dan karakter
+                    updateStatus(textarea.value, statusElement);
+
+                    // Menampilkan modal sukses
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'File berhasil diunggah',
+                        text: 'Plaintext berhasil diunggah dari file.',
+                        showConfirmButton: true
+                    });
+                }
+            };
+
+            // Membaca isi file sebagai teks
+            reader.readAsText(file);
+        } else {
+            // Menampilkan pesan kesalahan menggunakan SweetAlert
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'File yang diunggah bukan file txt.',
+                showConfirmButton: true
+            });
+
+            textarea.value = ''; // Mengosongkan textarea
+            updateStatus('', statusElement); // Reset status to 0 Bytes, 0 Characters
+        }
+    }
+});
+
+
+// Membersihkan nilai input file setelah digunakan
+document.getElementById('upload-plaintext-rsa-from-file-button').addEventListener('click', function() {
+    var fileInput = document.getElementById('upload-plaintext-rsa-from-file-input');
+    fileInput.value = null;
+});
+
+// Mendengarkan perubahan pada textarea
+document.getElementById('plaintext-rsa-text-encryption').addEventListener('input', function() {
+    updateStatus(this.value, document.getElementById('input-plaintext-rsa-text-encryption-status'));
+});
+
+// Fungsi untuk mengupdate status ukuran dan karakter
+function updateStatus(text, statusElement) {
+    var size = new Blob([text]).size; // Menghitung ukuran dalam byte
+    var charCount = text.length;
+    statusElement.textContent = 'Size: ' + size + ' Bytes, ' + charCount + ' Characters';
+}
+
+
+
+
+// ==================UPLOAD PUBLIC KEY RSA==================
+// Mendengarkan klik pada tombol file untuk Public Key
+document.getElementById('upload-public-key-from-file-button').addEventListener('click', function() {
+    // Memicu klik pada input file yang tersembunyi
+    document.getElementById('upload-public-key-from-file-input').click();
+});
+
+// Mendengarkan perubahan pada input file untuk Public Key
+document.getElementById('upload-public-key-from-file-input').addEventListener('change', function(event) {
+    var fileInput = event.target;
+    var textarea = document.getElementById('encryption-key-public-key-rsa');
+    var errorMessageDialog = document.getElementById('error-message-upload-public-key-from-file-dialog');
+
+    // Memastikan bahwa file dipilih
+    if (fileInput.files.length > 0) {
+        var file = fileInput.files[0];
+
+        // Memeriksa ekstensi file
+        var fileName = file.name;
+        var fileExtension = fileName.split('.').pop().toLowerCase();
+
+        if (fileExtension === 'pem') {
+            var reader = new FileReader();
+
+            // Menampilkan loading modal
+            var loadingModal = Swal.fire({
+                title: 'Sedang memproses',
+                text: 'Harap tunggu...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                onBeforeOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Mengatur fungsi callback ketika file selesai dibaca
+            reader.onload = function(e) {
+                // Menutup loading modal
+                loadingModal.close();
+
+                // Mengambil isi file dan mengisinya ke dalam textarea Public Key
+                var publicKeyContent = e.target.result;
+
+                // Memeriksa jumlah karakter
+                var maxCharacterLimit = 4000; // Ganti dengan batas karakter yang diinginkan
+                var actualCharacterCount = countCharacters(fileContent);
+
+                if (actualCharacterCount > maxCharacterLimit) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Karakter terlalu banyak. Pilih file dengan karakter yang lebih sedikit. Maksimal 4000 karakter!',
+                        showConfirmButton: true
+                    });
+
+                    textarea.value = ''; // Mengosongkan textarea
+                } else {
+                    // Mengambil isi file dan mengisinya ke dalam textarea Public Key
+                    textarea.value = publicKeyContent;
+
+                    // Menampilkan modal sukses
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'File berhasil diunggah',
+                        text: 'Public Key berhasil diunggah dari file.',
+                        showConfirmButton: true
+                    });
+                }
+            };
+
+            // Membaca isi file sebagai teks
+            reader.readAsText(file);
+        } else {
+            // Menampilkan pesan kesalahan menggunakan SweetAlert
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'File yang diunggah bukan file pem.',
+                showConfirmButton: true
+            });
+
+            textarea.value = ''; // Mengosongkan textarea
+        }
+    }
+});
+
+// Membersihkan nilai input file setelah digunakan
+document.getElementById('upload-public-key-from-file-button').addEventListener('click', function() {
+    var fileInput = document.getElementById('upload-public-key-from-file-input');
+    fileInput.value = null;
+});
+
+// ==================UPLOAD PRIVATE KEY RSA==================
+// Mendengarkan klik pada tombol file untuk Private Key
+document.getElementById('upload-private-key-from-file-button').addEventListener('click', function() {
+    // Memicu klik pada input file yang tersembunyi
+    document.getElementById('upload-private-key-from-file-input').click();
+});
+
+// Mendengarkan perubahan pada input file untuk Private Key
+document.getElementById('upload-private-key-from-file-input').addEventListener('change', function(event) {
+    var fileInput = event.target;
+    var textarea = document.getElementById('decryption-key-private-key-rsa');
+    var errorMessageDialog = document.getElementById('error-message-upload-private-key-from-file-dialog');
+
+    // Memastikan bahwa file dipilih
+    if (fileInput.files.length > 0) {
+        var file = fileInput.files[0];
+
+        // Memeriksa ekstensi file
+        var fileName = file.name;
+        var fileExtension = fileName.split('.').pop().toLowerCase();
+
+        if (fileExtension === 'pem') {
+            var reader = new FileReader();
+
+            // Menampilkan loading modal
+            var loadingModal = Swal.fire({
+                title: 'Sedang memproses',
+                text: 'Harap tunggu...',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                onBeforeOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // Mengatur fungsi callback ketika file selesai dibaca
+            reader.onload = function(e) {
+                // Menutup loading modal
+                loadingModal.close();
+
+                // Mengambil isi file dan mengisinya ke dalam textarea Private Key
+                var privateKeyContent = e.target.result;
+
+                // Memeriksa jumlah karakter
+                var maxCharacterLimit = 4000; // Ganti dengan batas karakter yang diinginkan
+                var actualCharacterCount = countCharacters(fileContent);
+
+                if (actualCharacterCount > maxCharacterLimit) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Karakter terlalu banyak. Pilih file dengan karakter yang lebih sedikit. Maksimal 4000 karakter!',
+                        showConfirmButton: true
+                    });
+
+                    textarea.value = ''; // Mengosongkan textarea
+                } else {
+                    // Mengambil isi file dan mengisinya ke dalam textarea Private Key
+                    textarea.value = privateKeyContent;
+
+                    // Menampilkan modal sukses
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'File berhasil diunggah',
+                        text: 'Private Key berhasil diunggah dari file.',
+                        showConfirmButton: true
+                    });
+                }
+            };
+
+            // Membaca isi file sebagai teks
+            reader.readAsText(file);
+        } else {
+            // Menampilkan pesan kesalahan menggunakan SweetAlert
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'File yang diunggah bukan file pem.',
+                showConfirmButton: true
+            });
+
+            textarea.value = ''; // Mengosongkan textarea
+        }
+    }
+});
+
+
+// Membersihkan nilai input file setelah digunakan
+document.getElementById('upload-private-key-from-file-button').addEventListener('click', function() {
+    var fileInput = document.getElementById('upload-private-key-from-file-input');
+    fileInput.value = null;
+});
+
+
+
+
+// ==================COUNT SIZE AND CHARACTER PLAINTEXT RSA==================      
+// Mendengarkan perubahan pada textarea Plaintext
+document.getElementById('plaintext-rsa-text-encryption').addEventListener('input', function() {
+    var textarea = this;
+    var statusElement = document.getElementById('input-plaintext-rsa-text-encryption-status');
+
+    // Menghitung ukuran dan jumlah karakter
+    var size = new Blob([textarea.value]).size; // Menghitung ukuran dalam byte
+    var charCount = textarea.value.length;
+
+    // Menampilkan hasil perhitungan
+    statusElement.textContent = 'Size: ' + size + ' Bytes, ' + charCount + ' Characters';
+});
+
+// ==================COUNT SIZE AND CHARACTER CIPHERTEXT RSA==================      
+// Mendengarkan perubahan pada textarea Ciphertext
+document.getElementById('ciphertext-rsa-text-encryption').addEventListener('input', function() {
+    var textarea = this;
+    var statusElement = document.getElementById('input-ciphertext-rsa-text-encryption-status');
+
+    // Menghitung ukuran dan jumlah karakter
+    var size = new Blob([textarea.value]).size; // Menghitung ukuran dalam byte
+    var charCount = textarea.value.length;
+
+    // Menampilkan hasil perhitungan
+    statusElement.textContent = 'Size: ' + size + ' Bytes, ' + charCount + ' Characters';
+});
+
+// ==============CLEAR INPUT BOX GENERATE KEY RSA==============
+// Mendengarkan klik pada tombol "Clear Decryption Box"
+document.getElementById('clear-input-box-generate-key-rsa-button').addEventListener('click', function() {
+    // Menghapus isi dari textarea
+    document.getElementById('result-generated-key-public-key-rsa').value = '';
+    document.getElementById('result-generated-key-private-key-rsa').value = '';
+});
+
+
+// ==============CLEAR DECRYPTION BOX==============
+// Mendengarkan klik pada tombol "Clear Decryption Box"
+document.getElementById('clear-input-box-decrypt-button').addEventListener('click', function() {
+    // Menghapus isi dari textarea
+    document.getElementById('ciphertext-rsa-text-encryption').value = '';
+    document.getElementById('decryption-key-private-key-rsa').value = '';
+    document.getElementById('result-decrypted-text-rsa').value = '';
+
+    // Menghapus informasi ukuran dan karakter
+    document.getElementById('input-ciphertext-rsa-text-encryption-status').textContent = 'Size: 0 Bytes, 0 Characters';
+});
+
+// Membersihkan nilai input file setelah digunakan
+document.getElementById('upload-ciphertext-rsa-from-file-button').addEventListener('click', function() {
+    var fileInput = document.getElementById('upload-ciphertext-rsa-from-file-input');
+    fileInput.value = null;
+});
+
+// Membersihkan nilai input file setelah digunakan
+document.getElementById('upload-private-key-from-file-button').addEventListener('click', function() {
+    var fileInput = document.getElementById('upload-private-key-from-file-input');
+    fileInput.value = null;
+});
+
+// ==============CLEAR ENCRYPTION BOX==============
+// Mendengarkan klik pada tombol "Clear Encryption Box"
+document.getElementById('clear-input-box-encrypt-button').addEventListener('click', function() {
+    // Menghapus isi dari textarea
+    document.getElementById('plaintext-rsa-text-encryption').value = '';
+    document.getElementById('encryption-key-public-key-rsa').value = '';
+    document.getElementById('result-encrypted-text-rsa').value = '';
+
+    // Menghapus informasi ukuran dan karakter
+    document.getElementById('input-plaintext-rsa-text-encryption-status').textContent = 'Size: 0 Bytes, 0 Characters';
+});
+
+// Membersihkan nilai input file setelah digunakan
+document.getElementById('upload-plaintext-rsa-from-file-button').addEventListener('click', function() {
+    var fileInput = document.getElementById('upload-ciphertext-rsa-from-file-input');
+    fileInput.value = null;
+});
+
+// Membersihkan nilai input file setelah digunakan
+document.getElementById('upload-public-key-from-file-button').addEventListener('click', function() {
+    var fileInput = document.getElementById('upload-public-key-from-file-input');
+    fileInput.value = null;
+});
+
+
+// Fungsi untuk menghitung karakter dengan benar, termasuk karakter khusus
+function countCharacters(text) {
+    var charCount = 0;
+    for (var i = 0; i < text.length; i++) {
+        // Memeriksa apakah karakter saat ini adalah karakter baris baru atau karakter kembali
+        if (text[i] !== '\n' && text[i] !== '\r') {
+            charCount++;
+        }
+    }
+    return charCount;
+}
+
+});
+      </script>
+
+{% endblock javascripts %}

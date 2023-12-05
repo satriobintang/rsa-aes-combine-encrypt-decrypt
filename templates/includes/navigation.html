@@ -1,0 +1,37 @@
+<header class="header header-sticky mb-4">
+  <div class="container-fluid">
+    <button class="header-toggler px-md-0 me-md-3" type="button" onclick="if (!window.__cfRLUnblockHandlers) return false; coreui.Sidebar.getInstance(document.querySelector('#sidebar')).toggle()">
+      <svg class="icon icon-lg">
+        <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-menu"></use>
+      </svg>
+    </button>
+    <a class="header-brand d-md-none" href="/">
+      <img class="sidebar-brand-full" src="/static/assets/img/logo.png" width="128" alt="XhCode Logo">
+    </a>
+    <ul class="header-nav d-none d-md-flex">
+      <li class="nav-item">Cryptool</li>
+    </ul>
+    <nav class="header-nav ms-auto me-4"></nav>
+    <ul class="header-nav me-3 d-md-flex">
+      <li class="nav-item dropdown d-md-down-none">
+        <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+          <input class="btn-check" id="btn-light-theme" type="radio" name="theme-switch" autocomplete="off" value="light" onchange="handleThemeChange(this)">
+          <label class="btn btn-primary" for="btn-light-theme">
+            <svg class="icon">
+              <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-sun"></use>
+            </svg>
+          </label>
+          <input class="btn-check" id="btn-dark-theme" type="radio" name="theme-switch" autocomplete="off" value="dark" onchange="handleThemeChange(this)">
+          <label class="btn btn-primary" for="btn-dark-theme">
+            <svg class="icon">
+              <use xlink:href="/static/assets/vendors/@coreui/icons/svg/free.svg#cil-moon"></use>
+            </svg>
+          </label>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+
+  
+</header>
